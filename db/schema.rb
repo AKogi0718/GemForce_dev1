@@ -10,4 +10,5 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define() do
+ActiveRecord::Schema[8.0].define(version: 20250426000000) do
+end
