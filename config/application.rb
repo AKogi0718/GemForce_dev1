@@ -20,7 +20,7 @@ module GemForceDev1
     config.action_controller.default_protect_from_forgery = true
 
     # ↓これを追加
-    config.action_controller.allow_browser_defaults = { allow_unknown: true }
+    # config.action_controller.allow_browser_defaults = { allow_unknown: true }
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
