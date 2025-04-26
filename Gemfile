@@ -35,11 +35,11 @@ gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
-
+gem "solid_queue"
+gem "solid_cable"
 group :development, :test do
   # SolidQueue and SolidCable should only load in development/test
-  gem "solid_queue"
-  gem "solid_cable"
+
 
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
