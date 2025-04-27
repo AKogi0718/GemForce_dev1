@@ -1,7 +1,7 @@
 # app/controllers/users_controller.rb
 class UsersController < ApplicationController
   before_action :authenticate_user, only: [:index, :show, :edit, :update]
-  before_action :forbid_login_user, only: [:new, :create, :login_form, :login]
+  before_action :forbid_login_user, only: [:login_form, :login]
   before_action :ensure_correct_user_or_admin, only: [:edit, :update]
   before_action :set_company, only: [:new, :create]
 
