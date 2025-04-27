@@ -8,7 +8,11 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    
+
+    <%# <% if Rails.configuration.respond_to?(:webpacker) && Rails.configuration.webpacker.config_path.exist? %>
+      <%# <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %> %>
+    <%# <% end %> %> %>
+
 
     <style>
       body {
