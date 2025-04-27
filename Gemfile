@@ -62,4 +62,6 @@ group :test do
   gem "selenium-webdriver"
 end
 
+gem 'sassc-rails'
+
 # gem "webpacker", "~> 5.4"
