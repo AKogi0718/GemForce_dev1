@@ -63,5 +63,10 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [:id]
 
   # DNS rebinding protection (you can customize if needed)
+  # アセットをプリコンパイルしない
+  config.assets.compile = true
   # config.hosts = ["example.com", /.*\.example\.com/]
+  config.webpacker.check_yarn_integrity = false if defined?(Webpacker)
+  # 静的ファイルをRailsからサーブ
+  config.public_file_server.enabled = true
 end
