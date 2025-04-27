@@ -1,0 +1,148 @@
+<!-- app/views/users/index.html.erb -->
+<div class="users-container">
+  <h1>ユーザー一覧</h1>
+
+  <% if flash[:notice] %>
+    <div class="alert alert-success">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+
+  <% if @current_user.admin? || @current_user.system_admin? %>
+    <div class="users-actions">
+      <% if @current_user.company.can_add_user?('staff') || @current_user.company.can_add_user?('admin') %>
+        <%= link_to "新規ユーザー登録", "/users/new?company_id=#{@current_user.company.company_id}", class: "btn btn-primary" %>
+      <% else %>
+        <button class="btn btn-primary disabled" disabled>ライセンス不足のため新規ユーザーを作成できません</button>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="users-list">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>名前</th>
+          <th>メールアドレス</th>
+          <th>権限</th>
+          <% if @current_user.system_admin? %>
+            <th>会社</th>
+          <% end %>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td><%= user.name %></td>
+            <td><%= user.email %></td>
+            <td>
+              <% if user.system_admin? %>
+                <span class="badge badge-danger">システム管理者</span>
+              <% elsif user.admin? %>
+                <span class="badge badge-warning">管理者</span>
+              <% else %>
+                <span class="badge badge-info">担当者</span>
+              <% end %>
+            </td>
+            <% if @current_user.system_admin? %>
+              <td><%= user.company.name %></td>
+            <% end %>
+            <td>
+              <%= link_to "詳細", "/users/#{user.id}", class: "btn btn-sm btn-info" %>
+              <% if @current_user.admin? && @current_user.company_id == user.company_id || @current_user.system_admin? || @current_user.id == user.id %>
+                <%= link_to "編集", "/users/#{user.id}/edit", class: "btn btn-sm btn-primary" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .users-container {
+    max-width: 1000px;
+    margin: 50px auto;
+  }
+
+  .users-actions {
+    margin: 20px 0;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .table th, .table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .table th {
+    background-color: #f8f9fa;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: white;
+  }
+
+  .badge-info {
+    background-color: #17a2b8;
+  }
+
+  .badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+  }
+
+  .badge-danger {
+    background-color: #dc3545;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-right: 5px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: normal;
+  }
+
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 0.875rem;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .btn-info {
+    background-color: #17a2b8;
+    color: white;
+  }
+
+  .btn-primary.disabled {
+    background-color: #7abaff;
+    cursor: not-allowed;
+  }
+
+  .alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+  }
+</style>

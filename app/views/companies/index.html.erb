@@ -1,0 +1,105 @@
+<!-- app/views/companies/index.html.erb -->
+<div class="company-container">
+  <h1>会社一覧</h1>
+
+  <% if flash[:notice] %>
+    <div class="alert alert-success">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+
+  <div class="company-actions">
+    <%= link_to "新規会社登録", "/companies/new", class: "btn btn-primary" %>
+  </div>
+
+  <div class="company-list">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>名称</th>
+          <th>会社ID</th>
+          <th>最大ユーザー数</th>
+          <th>管理者ライセンス</th>
+          <th>担当者ライセンス</th>
+          <th>種別</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @companies.each do |company| %>
+          <tr>
+            <td><%= company.name %></td>
+            <td><%= company.company_id %></td>
+            <td><%= company.users.count %>/<%= company.max_users %></td>
+            <td><%= company.used_admin_licenses %>/<%= company.admin_licenses %></td>
+            <td><%= company.used_staff_licenses %>/<%= company.staff_licenses %></td>
+            <td><%= company.is_owner ? "自社" : "他社" %></td>
+            <td>
+              <%= link_to "詳細", "/companies/#{company.id}", class: "btn btn-sm btn-info" %>
+              <%= link_to "編集", "/companies/#{company.id}/edit", class: "btn btn-sm btn-primary" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .company-container {
+    max-width: 1000px;
+    margin: 50px auto;
+  }
+
+  .company-actions {
+    margin: 20px 0;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .table th, .table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .table th {
+    background-color: #f8f9fa;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-right: 5px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: normal;
+  }
+
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 0.875rem;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .btn-info {
+    background-color: #17a2b8;
+    color: white;
+  }
+
+  .alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+  }
+</style>

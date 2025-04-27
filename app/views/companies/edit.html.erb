@@ -1,0 +1,178 @@
+<!-- app/views/companies/edit.html.erb -->
+<div class="company-form-container">
+  <h1>会社情報編集</h1>
+
+  <% if @company.errors.any? %>
+    <div class="alert alert-danger">
+      <ul>
+        <% @company.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with(model: @company, local: true, url: "/companies/#{@company.id}/update") do |form| %>
+    <div class="form-section">
+      <h3>基本情報</h3>
+
+      <div class="form-group">
+        <%= form.label :name, "会社名" %>
+        <%= form.text_field :name, class: "form-control", required: true %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :company_id, "会社ID" %>
+        <%= form.text_field :company_id, class: "form-control", required: true %>
+        <small class="form-text text-muted">ユーザーのログイン時に使用します</small>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :is_owner, "自社判定" %>
+        <div class="custom-control">
+          <%= form.check_box :is_owner, class: "form-check-input" %>
+          <span class="form-check-label">自社として登録する（システム管理者を作成可能）</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>連絡先情報</h3>
+
+      <div class="form-group">
+        <%= form.label :email, "メールアドレス" %>
+        <%= form.email_field :email, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :phone, "電話番号" %>
+        <%= form.text_field :phone, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :address, "住所" %>
+        <%= form.text_area :address, class: "form-control", rows: 3 %>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>ライセンス設定</h3>
+
+      <div class="form-group">
+        <%= form.label :max_users, "最大ユーザー数" %>
+        <%= form.number_field :max_users, class: "form-control", min: @company.users.count, required: true %>
+        <% if @company.users.count > 0 %>
+          <small class="form-text text-muted">※現在のユーザー数（<%= @company.users.count %>人）以上の値を設定してください</small>
+        <% end %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :admin_licenses, "管理者ライセンス数" %>
+        <%= form.number_field :admin_licenses, class: "form-control", min: @company.used_admin_licenses, required: true %>
+        <% if @company.used_admin_licenses > 0 %>
+          <small class="form-text text-muted">※現在の使用数（<%= @company.used_admin_licenses %>）以上の値を設定してください</small>
+        <% end %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :staff_licenses, "担当者ライセンス数" %>
+        <%= form.number_field :staff_licenses, class: "form-control", min: @company.used_staff_licenses, required: true %>
+        <% if @company.used_staff_licenses > 0 %>
+          <small class="form-text text-muted">※現在の使用数（<%= @company.used_staff_licenses %>）以上の値を設定してください</small>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <%= form.submit "更新する", class: "btn btn-primary" %>
+      <%= link_to "キャンセル", "/companies/#{@company.id}", class: "btn btn-secondary" %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+  .company-form-container {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-section {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+
+  .form-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    color: #333;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .custom-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .form-check-input {
+    width: 20px;
+    height: 20px;
+  }
+
+  .form-actions {
+    margin-top: 30px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+  }
+
+  .alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+  }
+
+  .form-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-top: 5px;
+  }
+</style>

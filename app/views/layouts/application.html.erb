@@ -1,28 +1,154 @@
+<!-- app/views/layouts/application.html.erb -->
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Gem Force Dev1" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
+    <title>GemForce</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= yield :head %>
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <style>
+      body {
+        font-family: "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa;
+        color: #333;
+      }
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+      .navbar {
+        background-color: #343a40;
+        padding: 15px 0;
+        color: white;
+      }
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      .navbar-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .navbar-brand {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
+      .navbar-nav {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .nav-item {
+        margin-left: 20px;
+      }
+
+      .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+
+      .nav-link:hover {
+        color: white;
+      }
+
+      .nav-link.active {
+        color: white;
+        font-weight: bold;
+      }
+
+      .content {
+        padding: 20px 0;
+      }
+
+      .flash {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+      }
+
+      .flash-success {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .footer {
+        padding: 20px 0;
+        margin-top: 50px;
+        background-color: #343a40;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+      }
+    </style>
   </head>
 
   <body>
-    <%= yield %>
+    <header>
+      <nav class="navbar">
+        <div class="container navbar-container">
+          <a href="/" class="navbar-brand">GemForce</a>
+          <ul class="navbar-nav">
+            <% if @current_user %>
+              <% if @current_user.system_admin? %>
+                <li class="nav-item">
+                  <a href="/companies" class="nav-link">会社一覧</a>
+                </li>
+              <% end %>
+
+              <% if @current_user.admin? || @current_user.system_admin? %>
+                <li class="nav-item">
+                  <a href="/users/index" class="nav-link">ユーザー一覧</a>
+                </li>
+              <% end %>
+
+              <li class="nav-item">
+                <a href="/users/<%= @current_user.id %>" class="nav-link">マイページ</a>
+              </li>
+
+              <li class="nav-item">
+                <a href="/logout" class="nav-link">ログアウト</a>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <a href="/login" class="nav-link">ログイン</a>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <main class="content">
+      <div class="container">
+        <% if flash[:notice] %>
+          <div class="flash flash-success">
+            <%= flash[:notice] %>
+          </div>
+        <% end %>
+
+        <%= yield %>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 GemForce. All rights reserved.</p>
+      </div>
+    </footer>
   </body>
 </html>
