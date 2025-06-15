@@ -1,0 +1,53 @@
+<!-- app/views/stone_parts/index.html.erb -->
+<div class="container">
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <h1>石パーツマスタ</h1>
+    </div>
+    <div class="col-md-6 text-right">
+      <%= link_to '新規登録', new_stone_part_path, class: 'btn btn-primary' %>
+      <%= link_to 'CSVエクスポート', export_stone_parts_path(format: :csv), class: 'btn btn-secondary' %>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+          <thead class="thead-dark">
+            <tr>
+              <th>石パーツコード</th>
+              <th>石パーツ名</th>
+              <th>種類</th>
+              <th>形式</th>
+              <th>サイズ</th>
+              <th>色</th>
+              <th>透明度</th>
+              <th>市場価格</th>
+              <th>状態</th>
+              <th colspan="3">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @stone_parts.each do |stone_part| %>
+              <tr>
+                <td><%= stone_part.code %></td>
+                <td><%= stone_part.name %></td>
+                <td><%= stone_part.stone_type %></td>
+                <td><%= stone_part.format_type %></td>
+                <td><%= stone_part.size %></td>
+                <td><%= stone_part.color %></td>
+                <td><%= stone_part.clarity %></td>
+                <td><%= number_to_currency(stone_part.market_price, unit: '¥') %></td>
+                <td><%= stone_part.active ? '有効' : '無効' %></td>
+                <td><%= link_to '詳細', stone_part_path(stone_part), class: 'btn btn-info btn-sm' %></td>
+                <td><%= link_to '編集', edit_stone_part_path(stone_part), class: 'btn btn-warning btn-sm' %></td>
+                <td><%= link_to '削除', stone_part_path(stone_part), method: :delete, data: { confirm: '本当に削除しますか？' }, class: 'btn btn-danger btn-sm' %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

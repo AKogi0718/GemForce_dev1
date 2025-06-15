@@ -1,0 +1,2 @@
+module StonePartsHelper
+end

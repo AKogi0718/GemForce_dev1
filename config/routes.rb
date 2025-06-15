@@ -1,38 +1,51 @@
 Rails.application.routes.draw do
+  # ホーム
+  root to: 'home#index'
 
-    # ホーム
-    root to: 'home#index'
+  # ユーザー認証
+  get 'login', to: 'users#login_form'
+  post 'login', to: 'users#login'
+  get 'logout', to: 'users#logout'
 
-    # ユーザー認証
-    get 'login' => 'users#login_form'
-    post 'login' => 'users#login'
-    get 'logout' => 'users#logout'
+  # 基本リソース
+  resources :users
+  resources :companies
+  resources :clients do
+    collection do
+      get :export
+    end
+  end
 
-    # ユーザー管理
-    get 'users/index' => 'users#index'
-    get 'users/new' => 'users#new'
-    post 'users/create' => 'users#create'
-    get 'users/:id' => 'users#show'
-    get 'users/:id/edit' => 'users#edit'
-    post 'users/:id/update' => 'users#update'
+  resources :products do
+    collection do
+      get :export
+    end
+    resources :product_materials, shallow: true, only: [:index, :new, :create, :edit, :update, :destroy]
+    resources :product_stone_parts, shallow: true, only: [:index, :new, :create, :edit, :update, :destroy]
+    resources :product_images, shallow: true, only: [:index, :new, :create, :edit, :update, :destroy]
+    resource :production, only: [:show, :new, :create, :edit, :update]
+  end
 
-    # 会社管理
-    get 'companies' => 'companies#index'
-    get 'companies/new' => 'companies#new'
-    post 'companies/create' => 'companies#create'
-    get 'companies/:id' => 'companies#show'
-    get 'companies/:id/edit' => 'companies#edit'
-    post 'companies/:id/update' => 'companies#update'
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  resources :categories
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+      # 地金マスタ
+    resources :materials do
+      resources :material_price_histories, shallow: true
+      collection do
+        get :export
+      end
+    end
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+    # 石パーツマスタ
+    resources :stone_parts do
+      collection do
+        get :export
+      end
+    end
+  
+  resources :suppliers
+  resources :parts
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # ヘルスチェック
+  get "up", to: "rails/health#show", as: :rails_health_check
 end

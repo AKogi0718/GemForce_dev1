@@ -1,0 +1,35 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  product: one
+  prototype_weight: 9.99
+  prototype_price: 9.99
+  prototype_cost: 9.99
+  prototype_date: 2025-04-28
+  prototype_size: MyString
+  prototype_maker: one
+  cast_supplier: one
+  polish_supplier: one
+  stone_setting_supplier: one
+  finishing_supplier: one
+  cast_wage: 9.99
+  polish_wage: 9.99
+  stone_setting_wage: 9.99
+  finishing_wage: 9.99
+
+two:
+  product: two
+  prototype_weight: 9.99
+  prototype_price: 9.99
+  prototype_cost: 9.99
+  prototype_date: 2025-04-28
+  prototype_size: MyString
+  prototype_maker: two
+  cast_supplier: two
+  polish_supplier: two
+  stone_setting_supplier: two
+  finishing_supplier: two
+  cast_wage: 9.99
+  polish_wage: 9.99
+  stone_setting_wage: 9.99
+  finishing_wage: 9.99

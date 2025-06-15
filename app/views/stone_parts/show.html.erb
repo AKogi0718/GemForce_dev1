@@ -1,0 +1,82 @@
+<!-- app/views/stone_parts/show.html.erb -->
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <h1>石パーツ詳細</h1>
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <h5>基本情報</h5>
+          <table class="table table-bordered">
+            <tr>
+              <th class="bg-light" style="width: 30%">石パーツコード</th>
+              <td><%= @stone_part.code %></td>
+            </tr>
+            <tr>
+              <th class="bg-light">石パーツ名</th>
+              <td><%= @stone_part.name %></td>
+            </tr>
+            <tr>
+              <th class="bg-light">種類</th>
+              <td><%= @stone_part.stone_type %></td>
+            </tr>
+            <tr>
+              <th class="bg-light">形式</th>
+              <td><%= @stone_part.format_type %></td>
+            </tr>
+            <tr>
+              <th class="bg-light">市場価格</th>
+              <td><%= number_to_currency(@stone_part.market_price, unit: '¥') %></td>
+            </tr>
+          </table>
+        </div>
+        <div class="col-md-6">
+          <h5>詳細情報</h5>
+          <table class="table table-bordered">
+            <tr>
+              <th class="bg-light" style="width: 30%">サイズ</th>
+              <td><%= @stone_part.size %></td>
+            </tr>
+            <tr>
+              <th class="bg-light">色</th>
+              <td><%= @stone_part.color %></td>
+            </tr>
+            <tr>
+              <th class="bg-light">透明度</th>
+              <td><%= @stone_part.clarity %></td>
+            </tr>
+            <tr>
+              <th class="bg-light">比重</th>
+              <td><%= @stone_part.specific_gravity %></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <table class="table table-bordered">
+            <tr>
+              <th class="bg-light" style="width: 30%">状態</th>
+              <td><%= @stone_part.active ? '有効' : '無効' %></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h5>関連情報</h5>
+          <p>この石パーツを使用している商品：<%= @stone_part.product_stone_parts&.count || 0 %> 件</p>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="btn-group">
+        <%= link_to '編集', edit_stone_part_path(@stone_part), class: 'btn btn-warning' %>
+        <%= link_to '一覧に戻る', stone_parts_path, class: 'btn btn-secondary' %>
+      </div>
+    </div>
+  </div>
+</div>

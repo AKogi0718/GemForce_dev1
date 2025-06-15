@@ -1,0 +1,33 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  product: one
+  stone_part: one
+  sequence: 1
+  format: MyString
+  size_info: MyString
+  shape: MyString
+  kind: MyString
+  carat_per_piece: 9.99
+  carat: 9.99
+  quantity: 1
+  unit_price: 9.99
+  wage: 9.99
+  supply_status: MyString
+  note: MyText
+
+two:
+  product: two
+  stone_part: two
+  sequence: 1
+  format: MyString
+  size_info: MyString
+  shape: MyString
+  kind: MyString
+  carat_per_piece: 9.99
+  carat: 9.99
+  quantity: 1
+  unit_price: 9.99
+  wage: 9.99
+  supply_status: MyString
+  note: MyText

@@ -1,0 +1,46 @@
+<!-- app/views/products/_product_stone_part_fields.html.erb -->
+<tr class="nested-fields">
+
+  <td>
+    <%= f.select :format,
+      [
+        ['石(〇〇×〇〇)', '石(〇〇×〇〇)'],
+        ['バーツ(〇〇〇mm)', 'バーツ(〇〇〇mm)'],
+        ['1/〇〇〇形式', '1/〇〇〇形式'],
+        ['特殊', '特殊']
+      ],
+      { include_blank: '選択してください' },
+      { class: 'form-control format-select' }
+    %>
+  </td>
+  <td><%= f.text_field :size_info, class: 'form-control' %></td>
+  <td>
+      <%= f.select :shape,
+        @stone_shapes.map { |shape| [shape, shape] },
+        { include_blank: '選択してください' },
+        { class: 'form-control select2-with-tags' }
+      %>
+    </td>
+    <td>
+      <%= f.select :kind,
+        @stone_kinds.map { |kind| [kind, kind] },
+        { include_blank: '選択してください' },
+        { class: 'form-control select2-with-tags' }
+      %>
+    </td>
+  <td><%= f.number_field :quantity, class: 'form-control' %></td>
+  <td><%= f.number_field :unit_price, class: 'form-control', step: '0.01' %></td>
+  <td><%= f.number_field :wage, class: 'form-control', step: '0.01' %></td>
+  <td>
+    <%= f.select :supply_status,
+      [['あり', 'あり'], ['なし', 'なし']],
+      { include_blank: '選択してください' },
+      { class: 'form-control' }
+    %>
+  </td>
+  <td><%= f.text_field :note, class: 'form-control' %></td>
+  <td>
+    <%= link_to_remove_association '削除', f, class: 'btn btn-danger btn-sm' %>
+    <%= f.hidden_field :sequence %>
+  </td>
+</tr>

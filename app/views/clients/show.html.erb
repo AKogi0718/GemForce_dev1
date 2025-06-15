@@ -1,0 +1,133 @@
+<div class="container-fluid mt-4">
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 font-weight-bold text-primary">取引先詳細</h6>
+      <div>
+        <%= link_to '編集', edit_client_path(@client), class: 'btn btn-primary btn-sm' %>
+        <%= link_to '一覧に戻る', clients_path, class: 'btn btn-secondary btn-sm ml-2' %>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">基本情報</div>
+            <div class="card-body">
+              <table class="table table-bordered">
+                <tr>
+                  <th class="table-light" style="width: 30%">取引先コード</th>
+                  <td><%= @client.code %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">取引先名</th>
+                  <td><%= @client.name %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">フリガナ</th>
+                  <td><%= @client.name_kana %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">代替名称</th>
+                  <td><%= @client.alternate_name %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">郵便番号</th>
+                  <td><%= @client.postal_code %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">住所</th>
+                  <td><%= @client.address %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">電話番号</th>
+                  <td><%= @client.tel %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">FAX番号</th>
+                  <td><%= @client.fax %></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">取引情報</div>
+            <div class="card-body">
+              <table class="table table-bordered">
+                <tr>
+                  <th class="table-light" style="width: 30%">締め日</th>
+                  <td><%= @client.billing_cutoff_day %> 日</td>
+                </tr>
+                <tr>
+                  <th class="table-light">担当者</th>
+                  <td><%= @client.contact_person %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">メールアドレス</th>
+                  <td><%= @client.email %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">支払条件</th>
+                  <td><%= @client.payment_terms %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">与信限度額</th>
+                  <td><%= number_to_currency(@client.credit_limit) %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">未払残高</th>
+                  <td><%= number_to_currency(@client.unpaid_balance) %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">現在残高</th>
+                  <td><%= number_to_currency(@client.current_balance) %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">顧客タイプ</th>
+                  <td><%= @client.client_type %></td>
+                </tr>
+                <tr>
+                  <th class="table-light">状態</th>
+                  <td><%= @client.status ? '有効' : '無効' %></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 取引先の商品一覧 -->
+      <div class="card mt-4">
+        <div class="card-header">関連商品</div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>商品コード</th>
+                  <th>商品名</th>
+                  <th>価格</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @client.products.each do |product| %>
+                  <tr>
+                    <td><%= product.code %></td>
+                    <td><%= product.name %></td>
+                    <td><%= number_to_currency(product.price) %></td>
+                    <td>
+                      <%= link_to '詳細', product_path(product), class: 'btn btn-info btn-sm' %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

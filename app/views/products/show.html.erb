@@ -1,0 +1,135 @@
+<div class="container-fluid mt-4">
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 font-weight-bold text-primary">商品詳細</h6>
+      <div>
+        <%= link_to '編集', edit_product_path(@product), class: 'btn btn-primary btn-sm' %>
+        <%= link_to '一覧に戻る', products_path, class: 'btn btn-secondary btn-sm ml-2' %>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- 基本情報テーブル -->
+      <table class="table table-bordered">
+        <tr>
+          <th class="bg-light" style="width: 12%">取引先</th>
+          <td style="width: 22%"><%= @product.client&.name %></td>
+          <th class="bg-light" style="width: 12%">品番</th>
+          <td style="width: 22%"><%= @product.code %></td>
+          <th class="bg-light" style="width: 12%">担当</th>
+          <td style="width: 22%"><%= @product.person_id %></td>
+        </tr>
+        <tr>
+          <th class="bg-light">相手品番</th>
+          <td><%= @product.client_code %></td>
+          <th class="bg-light">出値</th>
+          <td colspan="3"><%= number_to_currency(@product.price) %></td>
+        </tr>
+        <tr>
+          <th class="bg-light">備考1 キャスト注意事項</th>
+          <td colspan="5"><%= @product.casting_note %></td>
+        </tr>
+        <tr>
+          <th class="bg-light">備考2 磨き石留め注意事項</th>
+          <td colspan="5"><%= @product.polish_note %></td>
+        </tr>
+        <tr>
+          <th class="bg-light">分類</th>
+          <td><%= @product.category&.name %></td>
+          <th class="bg-light">型番</th>
+          <td><%= @product.code %></td>
+          <th class="bg-light">品名</th>
+          <td><%= @product.name %></td>
+        </tr>
+        <tr>
+          <th class="bg-light">企画名</th>
+          <td><%= @product.project_name %></td>
+          <th class="bg-light">原型(グラム)</th>
+          <td><%= @product.production&.prototype_weight %></td>
+          <th class="bg-light">原型売価</th>
+          <td><%= number_to_currency(@product.production&.prototype_price) %></td>
+        </tr>
+        <tr>
+          <th class="bg-light">原型原価</th>
+          <td><%= number_to_currency(@product.production&.prototype_cost) %></td>
+          <th class="bg-light">原型請求日</th>
+          <td><%= @product.production&.prototype_date %></td>
+          <th class="bg-light">原型サイズ</th>
+          <td><%= @product.production&.prototype_size %></td>
+        </tr>
+        <tr>
+          <th class="bg-light">原型作成者</th>
+          <td><%= @product.production&.prototype_maker&.name %></td>
+          <th class="bg-light">刻印</th>
+          <td><%= @product.engraved %></td>
+          <th class="bg-light">石目</th>
+          <td></td>
+        </tr>
+      </table>
+
+      <!-- 地金情報テーブル -->
+      <table class="table table-bordered mt-3">
+        <thead class="bg-light">
+          <tr>
+            <th style="width: 20%">地金名前</th>
+            <th style="width: 16%">キャスト重</th>
+            <th style="width: 16%">仕上重</th>
+            <th style="width: 16%">工賃</th>
+            <th style="width: 16%">数</th>
+            <th style="width: 16%">備考</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @product.product_materials.each do |material| %>
+            <tr>
+              <td><%= material.material&.name %></td>
+              <td><%= material.casting_weight %></td>
+              <td><%= material.finishing_weight %></td>
+              <td><%= number_to_currency(material.wage) %></td>
+              <td><%= material.quantity %></td>
+              <td><%= material.note %></td>
+            </tr>
+          <% end %>
+          <!-- 空の行を追加して表を大きく見せる -->
+          <% (5 - @product.product_materials.size).times do %>
+            <tr>
+              <td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      <!-- 石パーツ情報テーブル -->
+      <h5 class="mt-4">石パ形式</h5>
+      <table class="table table-bordered">
+        <thead class="bg-light">
+          <tr>
+            <th>石パ形式</th>
+            <th>サイズ(○○)</th>
+            <th>形/素材</th>
+            <th>種類</th>
+            <th>数</th>
+            <th>単価</th>
+            <th>工賃</th>
+            <th>支</th>
+            <th>備考</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @product.product_stone_parts.each do |stone_part| %>
+            <tr>
+              <td><%= stone_part.format %></td>
+              <td><%= stone_part.display_name %></td>
+              <td><%= stone_part.shape %></td>
+              <td><%= stone_part.kind %></td>
+              <td><%= stone_part.quantity %></td>
+              <td><%= number_to_currency(stone_part.unit_price) %></td>
+              <td><%= number_to_currency(stone_part.wage) %></td>
+              <td><%= stone_part.supply_status %></td>
+              <td><%= stone_part.note %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

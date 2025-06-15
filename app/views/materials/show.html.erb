@@ -1,0 +1,78 @@
+<!-- app/views/materials/show.html.erb -->
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <h1>地金詳細</h1>
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <h5>基本情報</h5>
+          <table class="table table-bordered">
+            <tr>
+              <th class="bg-light" style="width: 30%">地金コード</th>
+              <td><%= @material.code %></td>
+            </tr>
+            <tr>
+              <th class="bg-light">地金名</th>
+              <td><%= @material.name %></td>
+            </tr>
+            <tr>
+              <th class="bg-light">市場価格</th>
+              <td><%= number_to_currency(@material.market_price, unit: '¥') %></td>
+            </tr>
+            <tr>
+              <th class="bg-light">比重</th>
+              <td><%= @material.specific_gravity %></td>
+            </tr>
+          </table>
+        </div>
+        <div class="col-md-6">
+          <h5>含有率情報</h5>
+          <table class="table table-bordered">
+            <tr>
+              <th class="bg-light" style="width: 30%">プラチナ(Pt)比率</th>
+              <td><%= @material.platinum_rate %>%</td>
+            </tr>
+            <tr>
+              <th class="bg-light">金(Au)比率</th>
+              <td><%= @material.gold_rate %>%</td>
+            </tr>
+            <tr>
+              <th class="bg-light">パラジウム(Pd)比率</th>
+              <td><%= @material.palladium_rate %>%</td>
+            </tr>
+            <tr>
+              <th class="bg-light">銀(Ag)比率</th>
+              <td><%= @material.silver_rate %>%</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <table class="table table-bordered">
+            <tr>
+              <th class="bg-light" style="width: 30%">状態</th>
+              <td><%= @material.active ? '有効' : '無効' %></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h5>関連情報</h5>
+          <p>この地金を使用している商品：<%= @material.product_materials&.count || 0 %> 件</p>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="btn-group">
+        <%= link_to '編集', edit_material_path(@material), class: 'btn btn-warning' %>
+        <%= link_to '一覧に戻る', materials_path, class: 'btn btn-secondary' %>
+      </div>
+    </div>
+  </div>
+</div>

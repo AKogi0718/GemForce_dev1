@@ -1,0 +1,53 @@
+<!-- app/views/materials/index.html.erb -->
+<div class="container">
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <h1>地金マスタ</h1>
+    </div>
+    <div class="col-md-6 text-right">
+      <%= link_to '新規登録', new_material_path, class: 'btn btn-primary' %>
+      <%= link_to 'CSVエクスポート', export_materials_path(format: :csv), class: 'btn btn-secondary' %>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+          <thead class="thead-dark">
+            <tr>
+              <th>地金コード</th>
+              <th>地金名</th>
+              <th>市場価格</th>
+              <th>比重</th>
+              <th>Pt比率(%)</th>
+              <th>Au比率(%)</th>
+              <th>Pd比率(%)</th>
+              <th>Ag比率(%)</th>
+              <th>状態</th>
+              <th colspan="3">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @materials.each do |material| %>
+              <tr>
+                <td><%= material.code %></td>
+                <td><%= material.name %></td>
+                <td><%= number_to_currency(material.market_price, unit: '¥') %></td>
+                <td><%= material.specific_gravity %></td>
+                <td><%= material.platinum_rate %>%</td>
+                <td><%= material.gold_rate %>%</td>
+                <td><%= material.palladium_rate %>%</td>
+                <td><%= material.silver_rate %>%</td>
+                <td><%= material.active ? '有効' : '無効' %></td>
+                <td><%= link_to '詳細', material_path(material), class: 'btn btn-info btn-sm' %></td>
+                <td><%= link_to '編集', edit_material_path(material), class: 'btn btn-warning btn-sm' %></td>
+                <td><%= link_to '削除', material_path(material), method: :delete, data: { confirm: '本当に削除しますか？' }, class: 'btn btn-danger btn-sm' %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

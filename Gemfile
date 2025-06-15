@@ -63,5 +63,6 @@ group :test do
 end
 
 gem 'sassc-rails'
+gem 'cocoon'
 
 # gem "webpacker", "~> 5.4"

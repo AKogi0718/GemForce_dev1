@@ -1,0 +1,284 @@
+<%= form_with(model: product, local: true) do |form| %>
+  <% if product.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(product.errors.count, "error") %> prohibited this product from being saved:</h4>
+      <ul>
+        <% product.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header">基本情報</div>
+        <div class="card-body">
+          <table class="table table-bordered">
+            <tr>
+              <th class="table-light" style="width: 30%">取引先</th>
+              <td>
+                <%= form.collection_select :client_id, Client.all, :id, :name,
+                  { include_blank: '選択してください' },
+                  { class: 'form-control' } %>
+              </td>
+            </tr>
+            <tr>
+              <th class="table-light">相手品番</th>
+              <td><%= form.text_field :client_code, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">出値</th>
+              <td><%= form.number_field :price, class: 'form-control', step: '0.01' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">品番</th>
+              <td><%= form.text_field :code, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">品名</th>
+              <td><%= form.text_field :name, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">備考1 キャスト注意事項</th>
+              <td><%= form.text_area :casting_note, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">備考2 磨き石留め注意事項</th>
+              <td><%= form.text_area :polish_note, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">分類</th>
+              <td>
+                <%= form.collection_select :category_id, Category.all, :id, :name,
+                  { include_blank: '選択してください' },
+                  { class: 'form-control' } %>
+              </td>
+            </tr>
+            <tr>
+              <th class="table-light">企画名</th>
+              <td><%= form.text_field :project_name, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">刻印</th>
+              <td><%= form.text_field :engraved, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">備考3</th>
+              <td><%= form.text_area :note1, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">備考4</th>
+              <td><%= form.text_area :note2, class: 'form-control' %></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <%= fields_for :production, product.production || product.build_production do |production_form| %>
+        <div class="card mb-4">
+          <div class="card-header">製造情報</div>
+          <div class="card-body">
+            <table class="table table-bordered">
+              <tr>
+                <th class="table-light" style="width: 30%">原型（グラム）</th>
+                <td><%= production_form.number_field :prototype_weight, class: 'form-control', step: '0.001' %></td>
+              </tr>
+              <tr>
+                <th class="table-light">原型売価</th>
+                <td><%= production_form.number_field :prototype_price, class: 'form-control', step: '0.01' %></td>
+              </tr>
+              <tr>
+                <th class="table-light">原型原価</th>
+                <td><%= production_form.number_field :prototype_cost, class: 'form-control', step: '0.01' %></td>
+              </tr>
+              <tr>
+                <th class="table-light">原型請求日</th>
+                <td><%= production_form.date_field :prototype_date, class: 'form-control' %></td>
+              </tr>
+              <tr>
+                <th class="table-light">原型サイズ</th>
+                <td><%= production_form.text_field :prototype_size, class: 'form-control' %></td>
+              </tr>
+              <tr>
+                <th class="table-light">原型作成者</th>
+                <td>
+                  <%= production_form.collection_select :prototype_maker_id, Supplier.all, :id, :name,
+                    { include_blank: '選択してください' },
+                    { class: 'form-control' } %>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">工程情報</div>
+          <div class="card-body">
+            <table class="table table-bordered">
+              <tr>
+                <th class="table-light" style="width: 30%">キャスト業者</th>
+                <td>
+                  <%= production_form.collection_select :cast_supplier_id, Supplier.all, :id, :name,
+                    { include_blank: '選択してください' },
+                    { class: 'form-control' } %>
+                </td>
+              </tr>
+              <tr>
+                <th class="table-light">磨き業者</th>
+                <td>
+                  <%= production_form.collection_select :polish_supplier_id, Supplier.all, :id, :name,
+                    { include_blank: '選択してください' },
+                    { class: 'form-control' } %>
+                </td>
+              </tr>
+              <tr>
+                <th class="table-light">石留め業者</th>
+                <td>
+                  <%= production_form.collection_select :stone_setting_supplier_id, Supplier.all, :id, :name,
+                    { include_blank: '選択してください' },
+                    { class: 'form-control' } %>
+                </td>
+              </tr>
+              <tr>
+                <th class="table-light">仕上業者</th>
+                <td>
+                  <%= production_form.collection_select :finishing_supplier_id, Supplier.all, :id, :name,
+                    { include_blank: '選択してください' },
+                    { class: 'form-control' } %>
+                </td>
+              </tr>
+              <tr>
+                <th class="table-light">キャスト工賃</th>
+                <td><%= production_form.number_field :cast_wage, class: 'form-control', step: '0.01' %></td>
+              </tr>
+              <tr>
+                <th class="table-light">磨き工賃</th>
+                <td><%= production_form.number_field :polish_wage, class: 'form-control', step: '0.01' %></td>
+              </tr>
+              <tr>
+                <th class="table-light">石留め工賃</th>
+                <td><%= production_form.number_field :stone_setting_wage, class: 'form-control', step: '0.01' %></td>
+              </tr>
+              <tr>
+                <th class="table-light">仕上工賃</th>
+                <td><%= production_form.number_field :finishing_wage, class: 'form-control', step: '0.01' %></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 地金情報 -->
+  <div class="card mt-4">
+    <div class="card-header">地金情報</div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" id="materials-table">
+          <thead>
+            <tr>
+              <th>地金名前</th>
+              <th>キャスト量</th>
+              <th>仕上量</th>
+              <th>工賃</th>
+              <th>備考</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="materials-container">
+            <%= form.fields_for :product_materials do |material_form| %>
+              <%= render 'product_material_fields', f: material_form %>
+            <% end %>
+          </tbody>
+        </table>
+        <div class="mb-3">
+          <%= link_to_add_association '地金を追加', form, :product_materials,
+            class: 'btn btn-success',
+            data: {
+              association_insertion_node: '#materials-container',
+              association_insertion_method: :append
+            } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 石パーツ情報 -->
+  <div class="card mt-4">
+    <div class="card-header">石パーツ情報</div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" id="stone-parts-table">
+          <thead>
+            <tr>
+              <th>石パ形式</th>
+              <th>サイズ(○○)</th>
+              <th>形/素材</th>
+              <th>種類</th>
+              <th>数</th>
+              <th>単価</th>
+              <th>工賃</th>
+              <th>支</th>
+              <th>備考</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="stone-parts-container">
+            <%= form.fields_for :product_stone_parts do |stone_part_form| %>
+              <%= render 'product_stone_part_fields', f: stone_part_form %>
+            <% end %>
+          </tbody>
+        </table>
+        <div class="mb-3">
+          <%= link_to_add_association '石パーツを追加', form, :product_stone_parts,
+            class: 'btn btn-success',
+            data: {
+              association_insertion_node: '#stone-parts-container',
+              association_insertion_method: :append
+            } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 画像情報 -->
+  <div class="card mt-4">
+    <div class="card-header">商品画像</div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" id="images-table">
+          <thead>
+            <tr>
+              <th>画像</th>
+              <th>ファイル名</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="images-container">
+            <%= form.fields_for :product_images do |image_form| %>
+              <%= render 'product_image_fields', f: image_form %>
+            <% end %>
+          </tbody>
+        </table>
+        <div class="mb-3">
+          <%= link_to_add_association '画像を追加', form, :product_images,
+            class: 'btn btn-success',
+            data: {
+              association_insertion_node: '#images-container',
+              association_insertion_method: :append
+            } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-footer text-center mt-4">
+    <%= form.submit '保存', class: 'btn btn-primary' %>
+    <%= link_to 'キャンセル', products_path, class: 'btn btn-secondary ml-2' %>
+  </div>
+<% end %>

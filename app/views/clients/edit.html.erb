@@ -1,0 +1,122 @@
+<%= form_with(model: client, local: true) do |form| %>
+  <% if client.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(client.errors.count, "error") %> prohibited this client from being saved:</h4>
+      <ul>
+        <% client.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header">基本情報</div>
+        <div class="card-body">
+          <table class="table table-bordered">
+            <tr>
+              <th class="table-light" style="width: 30%">取引先コード</th>
+              <td><%= form.text_field :code, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">取引先名</th>
+              <td><%= form.text_field :name, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">フリガナ</th>
+              <td><%= form.text_field :name_kana, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">代替名称</th>
+              <td><%= form.text_field :alternate_name, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">郵便番号</th>
+              <td><%= form.text_field :postal_code, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">住所</th>
+              <td><%= form.text_field :address, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">電話番号</th>
+              <td><%= form.text_field :tel, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">FAX番号</th>
+              <td><%= form.text_field :fax, class: 'form-control' %></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">取引情報</div>
+        <div class="card-body">
+          <table class="table table-bordered">
+            <tr>
+              <th class="table-light" style="width: 30%">締め日</th>
+              <td>
+                <%= form.select :billing_cutoff_day,
+                  (0..31).map { |day| [day == 0 ? '月末' : "#{day}日", day] },
+                  { include_blank: '選択してください' },
+                  { class: 'form-control' } %>
+              </td>
+            </tr>
+            <tr>
+              <th class="table-light">担当者</th>
+              <td><%= form.text_field :contact_person, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">メールアドレス</th>
+              <td><%= form.email_field :email, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">支払条件</th>
+              <td><%= form.text_field :payment_terms, class: 'form-control' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">与信限度額</th>
+              <td><%= form.number_field :credit_limit, class: 'form-control', step: '0.01' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">未払残高</th>
+              <td><%= form.number_field :unpaid_balance, class: 'form-control', step: '0.01' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">現在残高</th>
+              <td><%= form.number_field :current_balance, class: 'form-control', step: '0.01' %></td>
+            </tr>
+            <tr>
+              <th class="table-light">顧客タイプ</th>
+              <td>
+                <%= form.select :client_type,
+                  [['取引先', '取引先'], ['仕入先', '仕入先'], ['両方', '両方']],
+                  { include_blank: '選択してください' },
+                  { class: 'form-control' } %>
+              </td>
+            </tr>
+            <tr>
+              <th class="table-light">状態</th>
+              <td>
+                <div class="custom-control custom-switch">
+                  <%= form.check_box :status, class: 'custom-control-input', id: 'statusSwitch' %>
+                  <label class="custom-control-label" for="statusSwitch">有効</label>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-footer text-center mt-4">
+    <%= form.submit '保存', class: 'btn btn-primary' %>
+    <%= link_to 'キャンセル', clients_path, class: 'btn btn-secondary ml-2' %>
+  </div>
+<% end %>

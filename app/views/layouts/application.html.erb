@@ -6,12 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
 
+    <!-- app/views/layouts/application.html.erb のhead内に追加 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+    <script>
+      // Cocoonのパッチ適用 - Turboとの互換性のため
+      document.addEventListener("DOMContentLoaded", function() {
+        // Cocoonの追加ボタン動作が壊れている場合の応急処置
+        document.querySelectorAll('.add_fields').forEach(function(button) {
+          button.addEventListener('click', function(e) {
+            e.preventDefault();
+            var assoc = this.getAttribute('data-association');
+            var content = this.getAttribute('data-association-insertion-template');
+            var insertionNode = document.querySelector(this.getAttribute('data-association-insertion-node'));
 
-
+            if (content && insertionNode) {
+              console.log('コンテンツを手動で挿入しています');
+              insertionNode.insertAdjacentHTML('beforeend', content);
+              // 挿入後のイベント発火
+              var event = new CustomEvent('cocoon:after-insert', {
+                detail: insertionNode.lastElementChild
+              });
+              document.dispatchEvent(event);
+            }
+          });
+        });
+      });
+    </script>
 
     <style>
       body {
@@ -22,74 +47,88 @@
         background-color: #f8f9fa;
         color: #333;
       }
-
       .navbar {
         background-color: #343a40;
         padding: 15px 0;
         color: white;
       }
-
       .container {
         width: 100%;
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 15px;
       }
-
       .navbar-container {
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
-
       .navbar-brand {
         color: white;
         font-size: 1.5rem;
         font-weight: bold;
         text-decoration: none;
       }
-
       .navbar-nav {
         display: flex;
         list-style: none;
         margin: 0;
         padding: 0;
       }
-
       .nav-item {
         margin-left: 20px;
       }
-
       .nav-link {
         color: rgba(255, 255, 255, 0.8);
         text-decoration: none;
         transition: color 0.2s;
       }
-
       .nav-link:hover {
         color: white;
       }
-
       .nav-link.active {
         color: white;
         font-weight: bold;
       }
-
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #343a40;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        border-radius: 4px;
+        margin-top: 5px;
+      }
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+      .dropdown-item {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+      .dropdown-item:hover {
+        background-color: #495057;
+        color: white;
+      }
       .content {
         padding: 20px 0;
       }
-
       .flash {
         padding: 15px;
         margin-bottom: 20px;
         border-radius: 5px;
       }
-
       .flash-success {
         background-color: #d4edda;
         color: #155724;
       }
-
       .footer {
         padding: 20px 0;
         margin-top: 50px;
@@ -99,7 +138,6 @@
       }
     </style>
   </head>
-
   <body>
     <header>
       <nav class="navbar">
@@ -107,22 +145,33 @@
           <a href="/" class="navbar-brand">GemForce</a>
           <ul class="navbar-nav">
             <% if @current_user %>
+              <!-- マスタ管理ドロップダウン -->
+              <li class="nav-item dropdown">
+                <a href="#" class="nav-link">マスタ管理</a>
+                <div class="dropdown-content">
+                  <a href="/products" class="dropdown-item">商品マスタ</a>
+                  <a href="/clients" class="dropdown-item">取引先マスタ</a>
+                  <a href="/materials" class="dropdown-item">地金マスタ</a>
+                  <a href="/stone_parts" class="dropdown-item">石パーツマスタ</a>
+                  <a href="/suppliers" class="dropdown-item">仕入先マスタ</a>
+                  <a href="/categories" class="dropdown-item">カテゴリマスタ</a>
+                  <a href="/parts" class="dropdown-item">パーツマスタ</a>
+                </div>
+              </li>
+
               <% if @current_user.system_admin? %>
                 <li class="nav-item">
                   <a href="/companies" class="nav-link">会社一覧</a>
                 </li>
               <% end %>
-
               <% if @current_user.admin? || @current_user.system_admin? %>
                 <li class="nav-item">
-                  <a href="/users/index" class="nav-link">ユーザー一覧</a>
+                  <a href="/users" class="nav-link">ユーザー一覧</a>
                 </li>
               <% end %>
-
               <li class="nav-item">
                 <a href="/users/<%= @current_user.id %>" class="nav-link">マイページ</a>
               </li>
-
               <li class="nav-item">
                 <a href="/logout" class="nav-link">ログアウト</a>
               </li>
@@ -135,7 +184,6 @@
         </div>
       </nav>
     </header>
-
     <main class="content">
       <div class="container">
         <% if flash[:notice] %>
@@ -143,11 +191,9 @@
             <%= flash[:notice] %>
           </div>
         <% end %>
-
         <%= yield %>
       </div>
     </main>
-
     <footer class="footer">
       <div class="container">
         <p>&copy; 2025 GemForce. All rights reserved.</p>

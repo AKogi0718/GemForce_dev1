@@ -1,0 +1,33 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  code: MyString
+  name: MyString
+  client: one
+  client_code: MyString
+  person: one
+  casting_note: MyText
+  polish_note: MyText
+  category: one
+  project_name: MyString
+  engraved: MyString
+  note1: MyText
+  note2: MyText
+  price: 9.99
+  active: false
+
+two:
+  code: MyString
+  name: MyString
+  client: two
+  client_code: MyString
+  person: two
+  casting_note: MyText
+  polish_note: MyText
+  category: two
+  project_name: MyString
+  engraved: MyString
+  note1: MyText
+  note2: MyText
+  price: 9.99
+  active: false

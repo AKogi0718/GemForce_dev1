@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  code: MyString
+  name: MyString
+  market_price: 9.99
+  specific_gravity: 9.99
+  platinum_rate: 9.99
+  gold_rate: 9.99
+  palladium_rate: 9.99
+  silver_rate: 9.99
+  active: false
+
+two:
+  code: MyString
+  name: MyString
+  market_price: 9.99
+  specific_gravity: 9.99
+  platinum_rate: 9.99
+  gold_rate: 9.99
+  palladium_rate: 9.99
+  silver_rate: 9.99
+  active: false

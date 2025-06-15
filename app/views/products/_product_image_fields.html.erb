@@ -1,0 +1,16 @@
+<tr class="nested-fields">
+  <td>
+    <div class="custom-file">
+      <%= f.file_field :image, class: 'custom-file-input' %>
+      <label class="custom-file-label" for="customFile">ファイルを選択...</label>
+    </div>
+    <% if f.object.persisted? && f.object.image.attached? %>
+      <div class="mt-2">
+        <%= image_tag f.object.image, style: 'max-width: 100px; max-height: 100px;' %>
+      </div>
+    <% end %>
+  </td>
+  <td><%= f.text_field :filename, class: 'form-control' %></td>
+  <td><%= link_to_remove_association '削除', f, class: 'btn btn-danger btn-sm' %></td>
+  <%= f.hidden_field :sequence %>
+</tr>

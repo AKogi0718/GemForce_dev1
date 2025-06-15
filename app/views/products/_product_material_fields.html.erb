@@ -1,0 +1,16 @@
+<tr class="nested-fields">
+  <td>
+    <%= f.collection_select :material_id, Material.all, :id, :name,
+      { include_blank: '選択してください' },
+      { class: 'form-control' } %>
+  </td>
+  <td><%= f.number_field :casting_weight, class: 'form-control', step: '0.001' %></td>
+  <td><%= f.number_field :finishing_weight, class: 'form-control', step: '0.001' %></td>
+  <td><%= f.number_field :wage, class: 'form-control', step: '0.01' %></td>
+  <td><%= f.number_field :quantity, class: 'form-control' %></td>
+  <td>
+    <%= f.text_field :note, class: 'form-control' %>
+    <%= link_to_remove_association '削除', f, class: 'btn btn-danger btn-sm mt-1' %>
+    <%= f.hidden_field :sequence %>
+  </td>
+</tr>
