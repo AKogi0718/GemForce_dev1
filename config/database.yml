@@ -23,3 +23,7 @@ production:
   queue:
     <<: *default
     url: <%= ENV["QUEUE_DATABASE_URL"] %>
+
+  prosper_external:
+    <<: *default
+    url: <%= ENV["PROSPER_DB_URL"] %>
