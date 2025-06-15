@@ -1,0 +1,559 @@
+<!-- 受注一覧index -->
+<style type="text/css" media="print">
+
+  @page { size: A4 landscape} /* A4横 */
+  div.print{
+        visibility: hidden;
+  }
+  div.divFooter {
+    width: 100%;
+    /* position: fixed; */
+    position: absolute;
+    bottom: 0;
+    visibility: visible;
+    }
+  @media print {
+  #menu {
+    display: none;
+  }
+  div.divFooter {
+    width: 100%;
+    /* position: fixed; */
+    position: absolute;
+    bottom: 0;
+    visibility: visible;
+
+
+
+}
+  div.print{
+
+    visibility: visible;
+
+  }
+
+}
+
+
+
+</style>
+
+<div class="main posts-index">
+  <% cache ["accounting_view", @year, @month, Post.maximum(:updated_at).to_i, Corporation.maximum(:updated_at).to_i, Urikake.maximum(:updated_at).to_i] do %>
+
+  <div id="menu">
+
+  </div>
+  <h2 align="center">売掛残高一覧表(<%= @year %>/<%= @month %>)</h2>
+  <table width="95%" border="2" align="center" style="font-size:12px;">
+    <tbody>
+      <tr>
+        <td width="25%" bgcolor="#fafad2" style="border: none;"><b>取引先名</b></td>
+        <td width="10%" bgcolor="#fafad2" style="border: none;"><b>先月末残高<br>当月末残高</b></td>
+        <td width="10%" bgcolor="#fafad2" style="border: none;"><b>売上合計<br>入金合計</b></td>
+        <td width="10%" bgcolor="#fafad2" style="border: none;"><b>売上<br>現金</b></td>
+        <td width="10%" bgcolor="#fafad2" style="border: none;"><b>返品<br>振込</b></td>
+        <td width="10%" bgcolor="#fafad2" style="border: none;"><b>値引<br>小切手</b></td>
+        <td width="10%" bgcolor="#fafad2" style="border: none;"><b>消費税<br>手形</b></td>
+        <td width="10%" bgcolor="#fafad2" style="border: none;"><b><br>相殺</b></td>
+      </tr>
+      <%# 先月末残高 %>
+      <% @ar5 =[0] %>
+       <%# 等月末残高 %>
+      <% @ar6 =[0] %>
+      <%# 売上合計 %>
+      <% @ar7 =[0] %>
+      <%# 入金合計 %>
+      <% @ar8 =[0] %>
+      <%# 売上 %>
+      <% @ar9 =[0] %>
+      <%# 入金 %>
+      <% @ar10 =[0] %>
+      <%# 消費税 %>
+      <% @ar11 =[0] %>
+      <%# 相殺 %>
+      <% @ar12 =[0] %>
+    <!-- </tbody>
+  </table> -->
+
+<!--
+
+<table width="85%" border="2" align="center" style="font-size:8px;">
+  <tbody>
+    <tr>
+      <td bgcolor="#fafad2"><b>会社名</b></td>
+      <td bgcolor="#fafad2"><b>売上総計(税別)</b></td>
+      <td bgcolor="#fafad2"><b>昨年度売上総計</b></td>
+      <td bgcolor="#fafad2"><b>昨対比</b></td>
+      <td bgcolor="#fafad2"><b>純利益</b></td>
+      <td bgcolor="#fafad2"><b>昨年度純利益</b></td>
+      <td bgcolor="#fafad2"><b>利益率</b></td>
+      <td bgcolor="#fafad2"><b>昨年度利益率</b></td>
+
+    </tr> -->
+    <% @array10 = [] %>
+<% if @posts.present? %>
+  <% @posts.each do |pp| %>
+    <% @array10 << pp&.client %>
+  <% end %>
+<% else %>
+  <!-- @postsがnilの場合のフォールバック処理 -->
+  <% Rails.logger.error("@posts is nil in theaccounting.html.erb") if Rails.env.development? || Rails.env.staging? %>
+  <% @array10 = [] %> <!-- 空の配列として初期化 -->
+<% end %>
+
+
+
+
+    <%# <% @array10.uniq.each do |ap| %>
+    <% @comp.each do |ap|  %>
+
+
+            <% @cop = @pastprice.where(client: ap.client) %>
+            <% @cops = [0] %>
+            <% @costs = [0] %>
+
+            <% @cop.each do |copss| %>
+
+            <% if copss.client.include? "ミルク" %>
+            <% copss&.ageheri ||= 0 %>
+            <% copss&.weight1 ||= 0 %>
+            <% copss&.weight2 ||= 0 %>
+            <% copss&.weight3 ||= 0 %>
+            <% copss&.weight4 ||= 0 %>
+            <% @theweight = copss&.weight1 * (100 + copss&.ageheri) / 100 %>
+            <% @theweights = @theweight.to_d.round(2) %>
+            <% @t1 ||= 0 %>
+            <% copss&.milk1 ||= 0 %>
+            <% @t1 = @theweights * copss&.milk1 %>
+            <% @the1 = @t1.round %>
+            <% @theweight2 = copss&.weight2 * (100 + copss&.ageheri) / 100 %>
+            <% @theweight2s = @theweight2.to_d.round(2) %>
+            <% @t2 ||= 0 %>
+            <% copss&.milk2 ||= 0 %>
+            <% @t2 = @theweight2s * copss&.milk2 %>
+            <% @the2 = @t2.round %>
+            <% @theweight3 = copss&.weight3 * (100 + copss&.ageheri) / 100 %>
+            <% @theweight3s = @theweight3.to_d.round(2) %>
+            <% @t3 ||= 0 %>
+              <% copss&.milk3 ||= 0 %>
+            <% @t3 = @theweight3s * copss&.milk3 %>
+            <% @the3 = @t3.round %>
+            <% @theweight4 = copss&.weight4 * (100 + copss&.ageheri) / 100 %>
+            <% @theweight4s = @theweight4.to_d.round(2) %>
+                  <% copss&.milk4 ||= 0 %>
+            <% @t4 = @theweight4s * copss&.milk4 %>
+            <% @the4 = @t4.round %>
+
+            <% @milkprice = copss&.lastamount.to_i * copss&.dashine.to_i + @the1 + @the2 + @the3 + @the4 %>
+            <% @milktax = @milkprice.floor / 10 %>
+            <% @cops << @milkprice + @milktax %>
+            <% @costs << copss&.lastamount.to_i * copss&.allwage.to_i + @the1 + @the2 + @the3 + @the4 %>
+
+
+            <% else %>
+
+            <% @product = Good.find_by(client_modelnumber: copss.modelnumber) %>
+
+                <% if @product&.bullion != nil  %>
+
+                <% @bb = Bullion.find_by(bullion: @product&.bullion) %>
+                  <% if copss.bweight1 != nil && @bb&.market_price != nil %>
+
+                  <% @castcost1 = @bb&.market_price * copss.bweight1 %>
+                  <% else %>
+                  <% @castcost1 = 0 %>
+
+                  <% end %>
+                <% else %>
+                <% @castcost1 = 0 %>
+                <% end %>
+
+
+                <% if @product&.bullion2 != nil %>
+
+                <% @bb2 = Bullion.find_by(bullion: @product&.bullion2) %>
+                  <% if copss&.bweight2 != nil && @bb2&.market_price != nil %>
+
+                  <% @castcost2 = @bb2&.market_price * copss&.bweight2 %>
+                  <% else %>
+                  <% @castcost2 = 0 %>
+
+                  <% end %>
+                <% else %>
+                <% @castcost2 = 0 %>
+                <% end %>
+
+
+
+                <% if @product&.bullion3 != nil  %>
+
+                <% @bb3 = Bullion.find_by(bullion: @product&.bullion3) %>
+                  <% if copss.bweight3 != nil && @bb3&.market_price != nil %>
+
+                  <% @castcost3 = @bb3&.market_price * copss.bweight3 %>
+                  <% else %>
+                  <% @castcost3 = 0 %>
+
+                  <% end %>
+                <% else %>
+                <% @castcost3 = 0 %>
+                <% end %>
+
+
+
+                <% if @product&.bullion4 != nil %>
+
+                <% @bb4 = Bullion.find_by(bullion: @product&.bullion4) %>
+                  <% if copss.bweight4 != nil && @bb4&.market_price != nil %>
+
+                  <% @castcost4 = @bb4&.market_price * copss.bweight4 %>
+                  <% else %>
+                  <% @castcost4 = 0 %>
+
+                  <% end %>
+                <% else %>
+                <% @castcost4 = 0 %>
+                <% end %>
+
+
+
+
+            <% @cops << copss&.lastamount.to_i * copss&.dashine.to_i * 1.1 %>
+            <% @costs << copss&.lastamount.to_i * copss&.allwage.to_i + @castcost1 + @castcost2 + @castcost3 + @castcost4 %>
+
+
+            <% end %>
+
+            <% end %>
+
+            <%# ============= %>
+
+
+            <% @nowpp = @nowprice.where(client: ap.client) %>
+            <% @nows = [0] %>
+            <% @nownumbers = [0] %>
+            <% @nowtax = [0] %>
+            <% @nowcosts = [0] %>
+
+            <% @nowpp.each do |nowss| %>
+
+            <% if nowss.modelnumber.include? "入金" %>
+
+            <% elsif nowss.modelnumber.include? "相殺" %>
+
+            <% else %>
+
+            <% if nowss.client.include? "ミルク" %>
+            <% nowss&.ageheri ||= 0 %>
+            <% nowss&.weight1 ||= 0 %>
+            <% nowss&.weight2 ||= 0 %>
+            <% nowss&.weight3 ||= 0 %>
+            <% nowss&.weight4 ||= 0 %>
+            <% @nowtheweight = nowss&.weight1 * (100 + nowss&.ageheri) / 100 %>
+            <% @nowtheweights = @nowtheweight.to_d.round(2) %>
+            <% @nowt1 ||= 0 %>
+            <% nowss&.milk1 ||= 0 %>
+            <% @nowt1 = @nowtheweights * nowss&.milk1 %>
+            <% @nowthe1 = @nowt1.round %>
+            <% @nowtheweight2 = nowss&.weight2 * (100 + nowss&.ageheri) / 100 %>
+            <% @nowtheweight2s = @nowtheweight2.to_d.round(2) %>
+            <% @nowt2 ||= 0 %>
+            <% nowss&.milk2 ||= 0 %>
+            <% @nowt2 = @nowtheweight2s * nowss&.milk2 %>
+            <% @nowthe2 = @nowt2.round %>
+            <% @nowtheweight3 = nowss&.weight3 * (100 + nowss&.ageheri) / 100 %>
+            <% @nowtheweight3s = @nowtheweight3.to_d.round(2) %>
+            <% @nowt3 ||= 0 %>
+              <% nowss&.milk3 ||= 0 %>
+            <% @nowt3 = @nowtheweight3s * nowss&.milk3 %>
+            <% @nowthe3 = @nowt3.round %>
+            <% @nowtheweight4 = nowss&.weight4 * (100 + nowss&.ageheri) / 100 %>
+            <% @nowtheweight4s = @nowtheweight4.to_d.round(2) %>
+                  <% nowss&.milk4 ||= 0 %>
+            <% @nowt4 = @nowtheweight4s * nowss&.milk4 %>
+            <% @nowthe4 = @nowt4.round %>
+
+
+            <% @nowmilkprice = nowss&.lastamount.to_i * nowss&.dashine.to_i + @nowthe1 + @nowthe2 + @nowthe3 + @nowthe4 %>
+            <% @nows << nowss&.lastamount.to_i * nowss&.dashine.to_i + @nowthe1 + @nowthe2 + @nowthe3 + @nowthe4 %>
+            <% @nowtax << @nowmilkprice / 10 %>
+            <% @nowcosts << nowss&.lastamount.to_i * nowss&.allwage.to_i + @nowthe1 + @nowthe2 + @nowthe3 + @nowthe4 %>
+
+
+            <% else %>
+
+            <% @nowproduct = Good.find_by(client_modelnumber: nowss.modelnumber) %>
+
+                <% if @nowproduct&.bullion != nil  %>
+
+                <% @nowbb = Bullion.find_by(bullion: @nowproduct&.bullion) %>
+                  <% if nowss.bweight1 != nil && @nowbb&.market_price != nil %>
+
+                  <% @nowcastcost1 = @nowbb&.market_price * nowss.bweight1 %>
+                  <% else %>
+                  <% @nowcastcost1 = 0 %>
+
+                  <% end %>
+                <% else %>
+                <% @nowcastcost1 = 0 %>
+                <% end %>
+
+
+                <% if @nowproduct&.bullion2 != nil %>
+
+                <% @nowbb2 = Bullion.find_by(bullion: @nowproduct&.bullion2) %>
+                  <% if nowss&.bweight2 != nil && @nowbb2&.market_price != nil %>
+
+                  <% @nowcastcost2 = @nowbb2&.market_price * nowss&.bweight2 %>
+                  <% else %>
+                  <% @nowcastcost2 = 0 %>
+
+                  <% end %>
+                <% else %>
+                <% @nowcastcost2 = 0 %>
+                <% end %>
+
+
+
+                <% if @nowproduct&.bullion3 != nil  %>
+
+                <% @nowbb3 = Bullion.find_by(bullion: @nowproduct&.bullion3) %>
+                  <% if nowss.bweight3 != nil && @nowbb3&.market_price != nil %>
+
+                  <% @nowcastcost3 = @nowbb3&.market_price * nowss.bweight3 %>
+                  <% else %>
+                  <% @nowcastcost3 = 0 %>
+
+                  <% end %>
+                <% else %>
+                <% @nowcastcost3 = 0 %>
+                <% end %>
+
+
+
+                <% if @nowproduct&.bullion4 != nil %>
+
+                <% @nowbb4 = Bullion.find_by(bullion: @nowproduct&.bullion4) %>
+                  <% if nowss.bweight4 != nil && @nowbb4&.market_price != nil %>
+
+                  <% @nowcastcost4 = @nowbb4&.market_price * nowss.bweight4 %>
+                  <% else %>
+                  <% @nowcastcost4 = 0 %>
+
+                  <% end %>
+                <% else %>
+                <% @nowcastcost4 = 0 %>
+                <% end %>
+
+
+
+            <% @nownumbers << nowss.id %>
+            <% @nows << nowss.lastamount.to_i * nowss.dashine.to_i %>
+            <% @nowtax << nowss.lastamount.to_i * nowss.dashine.to_i * 0.1 %>
+            <% @nowcosts << nowss.lastamount.to_i * nowss.allwage.to_i + @nowcastcost1 + @nowcastcost2 + @nowcastcost3 + @nowcastcost4 %>
+
+
+            <% end %>
+
+            <% end %>
+
+            <% end %>
+
+
+        <% @allpastallnyukin = @pastallnyukin.where(client: ap.client) %>
+        <% @pastnyukinsums = [0] %>
+
+        <% @allpastallnyukin.each do |apam| %>
+        <% @pastnyukinsums << apam&.dashine.to_i %>
+        <% end %>
+
+
+        <% @allnowallnyukin = @nowallnyukin.where(client: ap.client) %>
+        <% @nowallnyukinsums = [0] %>
+
+        <% @allnowallnyukin.each do |anan| %>
+        <% @nowallnyukinsums << anan&.dashine.to_i %>
+
+        <% end %>
+
+        <% @allpastallsousai = @pastallsousai.where(client: ap.client) %>
+        <% @pastsousaisums = [0] %>
+
+        <% @allpastallsousai.each do |apas| %>
+        <% @pastsousaisums << apas&.dashine.to_i %>
+
+        <% end %>
+
+        <% @allnowallsousai = @nowsousai.where(client: ap.client) %>
+        <% @nowallsousaisums = [0] %>
+
+        <% @allnowallsousai.each do |anas| %>
+        <% @nowallsousaisums << anas&.dashine.to_i %>
+
+        <% end %>
+
+        <% @unpaid = Corporation.find_by(client: ap.client) %>
+
+        <% if @unpaid.unpaid == nil %>
+
+        <% @upp = 0 %>
+        <% else %>
+
+        <% @upp = @unpaid.unpaid %>
+        <% end %>
+
+        <% @fees = @urikake1.where(client: ap.client) %>
+        <% @allfee = [0] %>
+        <% @fees.each do |fee1| %>
+
+        <% if fee1 == nil %>
+        <% @allfee << 0 %>
+        <% else %>
+        <% @allfee << fee1.fee %>
+        <% end %>
+
+        <% end %>
+
+        <% @feess = @urikake2.where(client: ap.client) %>
+          <% @allfeess = [0] %>
+          <% @feess.each do |fee2| %>
+            <% if fee2.nil? %>
+              <% @allfeess << 0 %>
+            <% else %>
+              <% @allfeess << (fee2.fee || 0) %>
+            <% end %>
+          <% end %>
+
+
+
+
+    <tr>
+
+
+      <td ><br><%= ap.client %></td>
+
+      <% begin %>
+        <!-- 問題の行 -->
+        <td ><%= number_to_currency(@upp + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum - @allfee.sum , unit: "¥", precision: 0) %><br><%= number_to_currency(@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @nows.sum + @nowtax.sum - @nowallnyukinsums.sum - @nowallsousaisums.sum, unit: "¥", precision: 0) %></td>
+      <% rescue => e %>
+        <td style="background-color:pink;">
+          エラー発生: <%= ap.client %><br>
+          <%= e.message %>
+        </td>
+      <% end %>
+
+
+<% @ar5 << @upp - @allfee.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum %>
+
+<% begin %>
+  <% @ar6 << @upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @nows.sum + @nowtax.sum - @nowallnyukinsums.sum - @nowallsousaisums.sum %>
+<% rescue => e %>
+  <!-- エラーをログに出力 -->
+  <% Rails.logger.error("計算エラー for client: #{ap.client}, message: #{e.message}") %>
+  <!-- エラーメッセージを表示 -->
+  <div style="background-color:pink; padding: 5px; margin: 5px; font-size: 10px;">
+    エラー発生: <%= ap.client %><br>
+    <%= e.message %><br>
+    @upp: <%= @upp.inspect %><br>
+    @allfee.sum: <%= @allfee.sum rescue 'ERROR' %><br>
+    @allfeess.sum: <%= @allfeess.sum rescue 'ERROR' %><br>
+    @cops.sum: <%= @cops.sum rescue 'ERROR' %><br>
+    @pastnyukinsums.sum: <%= @pastnyukinsums.sum rescue 'ERROR' %><br>
+    @pastsousaisums.sum: <%= @pastsousaisums.sum rescue 'ERROR' %><br>
+    @nows.sum: <%= @nows.sum rescue 'ERROR' %><br>
+    @nowtax.sum: <%= @nowtax.sum rescue 'ERROR' %><br>
+    @nowallnyukinsums.sum: <%= @nowallnyukinsums.sum rescue 'ERROR' %><br>
+    @nowallsousaisums.sum: <%= @nowallsousaisums.sum rescue 'ERROR' %><br>
+  </div>
+  <!-- エラーを回避してデフォルト値を追加 -->
+  <% @ar6 << 0 %>
+<% end %>
+
+
+<% begin %>
+<td ><%= number_to_currency(@upp + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum - @allfee.sum , unit: "¥", precision: 0) %><br><%= number_to_currency(@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @nows.sum + @nowtax.sum - @nowallnyukinsums.sum - @nowallsousaisums.sum, unit: "¥", precision: 0) %></td>
+<% rescue => e %>
+<td style="background-color:pink;">
+エラー発生: <%= ap.client %><br>
+<%= e.message %><br>
+@upp: <%= @upp.inspect %><br>
+@allfee.sum: <%= @allfee.sum rescue 'ERROR' %><br>
+@allfeess.sum: <%= @allfeess.sum rescue 'ERROR' %><br>
+@cops.sum: <%= @cops.sum rescue 'ERROR' %><br>
+@pastnyukinsums.sum: <%= @pastnyukinsums.sum rescue 'ERROR' %><br>
+@pastsousaisums.sum: <%= @pastsousaisums.sum rescue 'ERROR' %><br>
+@nows.sum: <%= @nows.sum rescue 'ERROR' %><br>
+@nowtax.sum: <%= @nowtax.sum rescue 'ERROR' %><br>
+@nowallnyukinsums.sum: <%= @nowallnyukinsums.sum rescue 'ERROR' %><br>
+@nowallsousaisums.sum: <%= @nowallsousaisums.sum rescue 'ERROR' %><br>
+</td>
+<% end %>
+
+      <td ><%= number_to_currency(@nows.sum, unit: "¥", precision: 0) %><br><p>-</p></td>
+      <td ><p>-</p><br><%= number_to_currency(@nowallnyukinsums&.sum, unit: "¥", precision: 0) %></td>
+      <td ><br></td>
+
+      <td ><%= number_to_currency(@nowtax.sum, unit: "¥", precision: 0) %><br><p>-</p></td>
+
+
+
+      <td ><br><%= number_to_currency(@nowallsousaisums&.sum, unit: "¥", precision: 0) %></td>
+      <% if @cops.sum == 0 %>
+      <% @ar7 << @nows.sum %>
+      <% @ar9 << @nows.sum %>
+      <% @ar11 << @nowtax.sum %>
+      <% else %>
+
+      <% @ar7 << @nows.sum %>
+      <% @ar8 << @nowallnyukinsums.sum %>
+      <% @ar9 << @nows.sum %>
+      <% @ar11 << @nowtax.sum %>
+
+      <% end %>
+      <% @ar10 << @nowallnyukinsums.sum %>
+      <% @ar12 << @nowallsousaisums.sum %>
+
+    </tr>
+    <% end %>
+
+  <tr>
+      <td><b>合計</b></td>
+      <td><%= number_to_currency(@ar5.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@ar5.sum + @ar7.sum + @ar11.sum - @ar12.sum - @ar8.sum, unit: "¥", precision: 0) %></td>
+      <td><%= number_to_currency(@ar7&.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@ar8&.sum, unit: "¥", precision: 0) %></td>
+      <td><%= number_to_currency(@ar9&.sum, unit: "¥", precision: 0) %><br><p>-</p></td>
+      <td><p>-</p><br><%= number_to_currency(@ar10&.sum, unit: "¥", precision: 0) %></td>
+      <td></td>
+      <td><%= number_to_currency(@ar11&.sum, unit: "¥", precision: 0) %><br><p>-</p></td>
+      <td><br><%= number_to_currency(@ar12&.sum, unit: "¥", precision: 0) %></td>
+    </tr>
+
+    </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+                  <div style="font-size:8pt;">
+              <p align="center">有限会社 栄泉 〒406-0803 山梨県笛吹市御坂町井之上762-1 Tel 055-262-1458 Fax 055-262-9875</p>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+<% end %>
+</div>

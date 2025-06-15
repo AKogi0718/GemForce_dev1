@@ -1,0 +1,39 @@
+
+
+<div class="main posts-new">
+  <div class="container">
+    <h1 class="form-heading">出力月選択</h1>
+
+<%= form_tag("/posts/monthselect") do %>
+<div class="form">
+        <div class="form-body">
+          <p>年(半角)</p>
+          <input name="year" value="" required>
+          <p>月(半角)</p>
+          <input name="month" value="" required>
+
+
+
+
+          <input type="submit" value="出力">
+        </div>
+      </div>
+        <% end %>
+
+      </div>
+    </div>
+
+    <script type="text/javascript">
+
+    // ここにJavaScriptの処理かくよー
+    function connecttext( textid, ischecked ) {
+  if( ischecked == true ) {
+     // チェックが入っていたら有効化
+     document.getElementById(textid).disabled = false;
+  }
+  else {
+     // チェックが入っていなかったら無効化
+     document.getElementById(textid).disabled = true;
+  }
+}
+    </script>

@@ -7,6 +7,12 @@ Rails.application.routes.draw do
   post 'login', to: 'users#login'
   get 'logout', to: 'users#logout'
 
+    # config/routes.rb
+  get 'posts/select', to: 'posts#select'
+  post 'posts/monthselect', to: 'posts#monthselect'
+  get 'posts/:year/:month/theaccounting', to: 'posts#theaccounting', as: 'theaccounting'
+
+
   # 基本リソース
   resources :users
   resources :companies
@@ -42,7 +48,7 @@ Rails.application.routes.draw do
         get :export
       end
     end
-  
+
   resources :suppliers
   resources :parts
 

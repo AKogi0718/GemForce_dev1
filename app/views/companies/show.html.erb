@@ -60,6 +60,7 @@
       <% if @current_user.admin? || @current_user.system_admin? %>
         <%= link_to "ユーザー一覧", "/users/index", class: "btn btn-info" %>
       <% end %>
+      <%= link_to "売掛残高一覧表出力", "/posts/select", class: "btn btn-success" %>
       <%= link_to "戻る", :back, class: "btn btn-secondary" %>
     </div>
   </div>
