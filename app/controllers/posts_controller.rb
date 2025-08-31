@@ -64,9 +64,9 @@ class PostsController < ApplicationController
     @timeb = start_time.to_date
     @time = time_now.to_date
 
-    @comp = Corporation.all
+    @comp = ProsperCorporation.all
     # 納品済み(process: 6)で、納品番号があり、対象期間内のデータを取得
-    posts_query = Post.where(process: 6)
+    posts_query = ProsperPost.where(process: 6)
                       .where.not(nouhinnum: nil)
                       .where(lastdate: start_time..end_time)
 
@@ -76,7 +76,7 @@ class PostsController < ApplicationController
     @postss = @posts.distinct
 
     # 既存コードからの移行
-    @cast = Post.find_by(castprint: 0)
+    @cast = ProsperPost.find_by(castprint: 0)
   end
 
   # 請求月選択後のリダイレクト処理
@@ -85,7 +85,7 @@ class PostsController < ApplicationController
     year = params[:year]
     month = params[:month]
     # Corporation.all は不要
-    sime = Corporation.find_by(client: client)
+    sime = ProsperCorporation.find_by(client: client)
 
     if sime
       # ルーティングヘルパーを使用
@@ -100,7 +100,7 @@ class PostsController < ApplicationController
   def invoice
     @client_name = params[:client]
 
-    @comp = Corporation.find_by(client: @client_name)
+    @comp = ProsperCorporation.find_by(client: @client_name)
 
     unless @comp
       flash[:alert] = "指定された取引先が見つかりません。"
@@ -136,9 +136,9 @@ class PostsController < ApplicationController
     end
 
     # 共通で使われる変数（既存コードより移行）
-    @uri = Urikake.where(client: @client_name)
-    @ur = Urikake.find_by(client: @client_name)
-    @cast = Post.find_by(castprint: 0)
+    @uri = ProsperUrikake.where(client: @client_name)
+    @ur = ProsperUrikake.find_by(client: @client_name)
+    @cast = ProsperPost.find_by(castprint: 0)
   end
 
   # ... (既存の他のアクションは省略) ...
@@ -213,16 +213,16 @@ class PostsController < ApplicationController
     # 当月データの売上・相殺条件の設定（既存コードのロジックを維持）
     if use_like_for_offset
       # 月末締めの場合: modelnameで入金を除外し、modelnumberのLIKEで相殺を除外
-      current_sales_conditions = Post.where.not(modelname: "入金").where.not("modelnumber LIKE ?", "%相殺%")
+      current_sales_conditions = ProsperPost.where.not(modelname: "入金").where.not("modelnumber LIKE ?", "%相殺%")
       current_offset_condition = ["modelnumber LIKE ?", "%相殺%"]
     else
       # 指定日締めの場合: modelnameで入金と相殺を除外 (完全一致)
-      current_sales_conditions = Post.where.not(modelname: "入金").where.not(modelname: "相殺")
+      current_sales_conditions = ProsperPost.where.not(modelname: "入金").where.not(modelname: "相殺")
       current_offset_condition = { modelname: "相殺" }
     end
 
     # --- 過去データ（前月繰越計算用） ---
-    past_base = Post.where(client: client).where.not(nouhinnum: nil).where(lastdate: past_range)
+    past_base = ProsperPost.where(client: client).where.not(nouhinnum: nil).where(lastdate: past_range)
 
     # 過去の売上
     @past = past_base.where.not(modelnumber: "入金").where.not(past_offset_condition)
@@ -231,10 +231,10 @@ class PostsController < ApplicationController
     # 過去の相殺
     @pastallsousai = past_base.where(past_offset_condition)
 
-    @urikake1 = Urikake.where(client: client).where(date: past_range)
+    @urikake1 = ProsperUrikake.where(client: client).where(date: past_range)
 
     # --- 当月データ ---
-    current_base = Post.where(client: client).where(process: 6).where.not(nouhinnum: nil).where(lastdate: current_range)
+    current_base = ProsperPost.where(client: client).where(process: 6).where.not(nouhinnum: nil).where(lastdate: current_range)
     # 特定担当者除外（既存コード踏襲）
     current_base_filtered = current_base.where.not(person: "荻原誠二")
 
@@ -252,7 +252,7 @@ class PostsController < ApplicationController
     @minus = current_base_filtered.where(current_offset_condition)
 
     # 当月の売掛データ
-    @urik = Urikake.where(client: client).where(date: current_range).where.not(bunrui: "6-相殺")
+    @urik = ProsperUrikake.where(client: client).where(date: current_range).where.not(bunrui: "6-相殺")
   end
 
 
