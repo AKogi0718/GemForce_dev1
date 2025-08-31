@@ -1,0 +1,139 @@
+<% summary = calculate_invoice_summary(@past, @pastallnyukin, @pastallsousai, @ageuri, @minus, @comp) %>
+
+<div class="invoice-container">
+  <h1>請求書</h1>
+
+  <div class="invoice-header">
+    <div class="recipient">
+      <h2><%= @comp.client %> 御中</h2>
+    </div>
+    <div class="issuer">
+      <%# @issuedate は Dateオブジェクト %>
+      <p>発行日: <%= @issuedate.strftime("%Y年%m月%d日") %></p>
+      <p>対象月: <%= @yyy %>年 <%= @mmm %>月分</p>
+      <p>自社名</p>
+      <p>住所・連絡先</p>
+    </div>
+  </div>
+
+  <div class="invoice-summary">
+    <h3>ご請求金額: <%= number_to_currency(summary[:total_billing], unit: "￥", precision: 0) %></h3>
+  </div>
+
+  <div class="invoice-breakdown">
+    <table>
+      <tr>
+        <th>前回ご請求残高（繰越）</th>
+        <td class="text-right"><%= number_to_currency(summary[:previous_balance], unit: "￥", precision: 0) %></td>
+      </tr>
+      <tr>
+        <th>当月お買上額</th>
+        <td class="text-right"><%= number_to_currency(summary[:current_sales], unit: "￥", precision: 0) %></td>
+      </tr>
+      <tr>
+        <th>当月相殺額</th>
+        <%# 相殺額はマイナス表示 %>
+        <td class="text-right"><%= number_to_currency(summary[:current_offsets] * -1, unit: "￥", precision: 0) %></td>
+      </tr>
+      <tr>
+        <th>消費税額 (<%= summary[:tax_rate_percent] %>%)</th>
+        <td class="text-right"><%= number_to_currency(summary[:current_tax], unit: "￥", precision: 0) %></td>
+      </tr>
+      <tr class="total-row">
+        <th>当月ご請求額合計</th>
+        <td class="text-right"><%= number_to_currency(summary[:total_billing], unit: "￥", precision: 0) %></td>
+      </tr>
+    </table>
+  </div>
+
+  <h2>お取引明細</h2>
+  <table class="details-table">
+    <thead>
+      <tr>
+        <th>納品日</th>
+        <th>伝票No</th>
+        <th>品番</th>
+        <th>品名</th>
+        <th>数量</th>
+        <th>単価</th>
+        <th>金額</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%# @postsには当月の取引（売上、入金、相殺）が含まれます %>
+      <% @posts.each do |post| %>
+        <%# 金額 = 単価 * 数量 %>
+        <% amount = post.dashine.to_i * post.lastamount.to_i %>
+        <tr>
+          <td><%= post.lastdate.strftime("%Y/%m/%d") %></td>
+          <td><%= post.nouhinnum %></td>
+          <td><%= post.modelnumber %></td>
+          <td><%= post.modelname %></td>
+          <td class="text-right"><%= post.lastamount %></td>
+          <td class="text-right">
+            <%# 単価 (dashine) %>
+            <%= number_to_currency(post.dashine, unit: "", precision: 0) %>
+          </td>
+          <td class="text-right">
+            <%# 金額 (売上はプラス、相殺はマイナスで表示されます) %>
+            <%= number_to_currency(amount, unit: "", precision: 0) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <p style="margin-top: 20px; font-size: 0.9em; color: #666;">
+    ※既存システムのロジックに基づき、当月の入金は上記の「ご請求額合計」の計算には含まれておりません（明細には表示されます）。
+  </p>
+</div>
+
+<style>
+  .invoice-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    font-family: sans-serif;
+    border: 1px solid #eee;
+  }
+  .invoice-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+  .invoice-summary {
+    text-align: center;
+    padding: 15px;
+    margin-bottom: 30px;
+  }
+  .invoice-summary h3 {
+    font-size: 1.5em;
+    border-bottom: 2px solid black;
+    display: inline-block;
+  }
+  .invoice-breakdown table {
+    width: 60%;
+    margin-bottom: 40px;
+    border-collapse: collapse;
+  }
+  .invoice-breakdown th, .invoice-breakdown td {
+    padding: 5px 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  .total-row th, .total-row td {
+    font-weight: bold;
+    border-top: 2px solid black;
+  }
+  .details-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .details-table th, .details-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  .text-right {
+    text-align: right;
+  }
+</style>

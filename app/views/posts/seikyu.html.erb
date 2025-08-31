@@ -1,0 +1,58 @@
+<h1>請求書発行対象一覧</h1>
+
+<p>
+  <%# コントローラでDateオブジェクトとして計算された @timeb, @time を表示 %>
+  直近の取引期間: <%= @timeb.strftime("%Y年%m月%d日") %> 〜 <%= @time.strftime("%Y年%m月%d日") %>
+</p>
+
+<%# @postss（対象期間内のPostデータ）から会社一覧を取得 %>
+<% clients = @postss.pluck(:client).uniq.compact %>
+
+<% if clients.present? %>
+  <table class="seikyu-table">
+    <thead>
+      <tr>
+        <th>取引先名</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% clients.each do |client| %>
+        <tr>
+          <td><%= client %></td>
+          <td>
+            <%# 年月選択フォーム。POSTでselecting_posts_pathへ送信 %>
+            <%= form_tag(selecting_posts_path, method: :post) do %>
+              <%= hidden_field_tag :client, client %>
+
+              <%# 年の選択（デフォルトはコントローラで計算された@year2） %>
+              <%= select_tag :year, options_for_select((@year2.to_i-2..@year2.to_i).to_a.reverse, @year2.to_i) %> 年
+
+              <%# 月の選択（デフォルトはコントローラで計算された@month2） %>
+              <%= select_tag :month, options_for_select((1..12).map { |m| "%02d" % m }, @month2) %> 月分
+
+              <%= submit_tag '請求書表示' %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>対象期間に取引のあった会社はありません。</p>
+<% end %>
+
+<style>
+  .seikyu-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .seikyu-table th, .seikyu-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  .seikyu-table th {
+    background-color: #f2f2f2;
+  }
+</style>
