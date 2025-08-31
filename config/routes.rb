@@ -21,6 +21,21 @@ Rails.application.routes.draw do
       get :export
     end
   end
+  
+  resources :posts do
+    collection do
+      get 'seikyu' # 請求一覧画面
+    end
+  end
+
+  # 請求月選択後の処理 (seikyu画面のフォーム送信先)
+  post 'posts/selecting', to: 'posts#selecting', as: 'selecting_posts'
+
+  # 請求書詳細画面へのカスタムルート
+  # 既存のパス構造を踏襲: /posts/:client/:year/:month/:date/invoice
+  # :date は締め日が入ります
+  get '/posts/:client/:year/:month/:date/invoice', to: 'posts#invoice', as: 'posts_invoice'
+
 
   resources :products do
     collection do
