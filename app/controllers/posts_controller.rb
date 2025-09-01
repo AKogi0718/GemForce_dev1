@@ -33,6 +33,7 @@ class PostsController < ApplicationController
 
   # 請求一覧画面
   # 既存ロジック（現在日から約1ヶ月前の同日までの範囲）を踏襲しつつ、安全な日付計算に改善
+  # 請求一覧画面
   def seikyu
     time_now = Time.zone.now
     year = time_now.year
@@ -67,13 +68,18 @@ class PostsController < ApplicationController
     @comp = ProsperCorporation.all
     # 納品済み(process: 6)で、納品番号があり、対象期間内のデータを取得
     posts_query = ProsperPost.where(process: 6)
-                      .where.not(nouhinnum: nil)
-                      .where(lastdate: start_time..end_time)
+                             .where.not(nouhinnum: nil)
+                             .where(lastdate: start_time..end_time)
 
     @q = posts_query.ransack(params[:q])
-    @posts = @q.result(distinct: true).order(created_at: :desc)
-    # 会社一覧表示のために重複を除いた結果 (ビューで使用)
-    @postss = @posts.distinct
+
+    # 【修正点】 .order(created_at: :desc) を削除しました。
+    # 会社一覧を取得する際 (ビューでpluck(:client)する際) に、
+    # PostgreSQL環境で DISTINCT と ORDER BY が競合するエラー (PG::InvalidColumnReference) を防ぐためです。
+    @posts = @q.result(distinct: true)
+
+    # 会社一覧表示のために使用する変数 (ビューで使用)
+    @postss = @posts
 
     # 既存コードからの移行
     @cast = ProsperPost.find_by(castprint: 0)
