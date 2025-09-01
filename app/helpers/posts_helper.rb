@@ -3,7 +3,7 @@
 module PostsHelper
   # データベース上で金額合計 (単価 * 数量) を計算するヘルパー
   def calculate_total_amount(posts_relation)
-    # 【修正点】カラムのデータ型に応じてSQLを動的に生成する
+    # カラムのデータ型に応じてSQLを動的に生成する
 
     # リレーションからモデルクラス（例: ProsperPost）を取得
     return 0 unless posts_relation.respond_to?(:model)
@@ -31,11 +31,13 @@ module PostsHelper
     lastamount_sql = generate_sql_for.call('lastamount')
 
     # 最終的な計算式を組み合わせる
-    # SUM((単価のSQL) * (数量のSQL))
-    sql = "SUM((#{dashine_sql}) * (#{lastamount_sql}))"
+    # (単価のSQL) * (数量のSQL)
+    # 【修正点】外側の SUM() を削除しました。ActiveRecordの.sumメソッドがSUMを担当します。
+    sql = "((#{dashine_sql}) * (#{lastamount_sql}))"
 
     # SQLを実行し、結果を整数で返す (.to_i)
     # Arel.sql() を使用して、安全に生のSQLスニペットをクエリに組み込みます。
+    # .sum(sql) は SELECT SUM(sql) FROM ... を実行します。
     posts_relation.sum(Arel.sql(sql)).to_i
   end
 
