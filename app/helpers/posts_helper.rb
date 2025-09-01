@@ -3,25 +3,44 @@
 module PostsHelper
   # データベース上で金額合計 (単価 * 数量) を計算するヘルパー
   def calculate_total_amount(posts_relation)
-    # 【修正点】PostgreSQL対応: 文字列型のカラムを安全に数値計算する
-    #
-    # 1. NULLIF(column, ''): 空文字('')をNULLに変換する (PostgreSQLでは空文字を数値にCASTできないため)。
-    # 2. CAST(... AS NUMERIC): 数値型に変換する。
-    # 3. COALESCE(..., 0): NULL（元のNULLおよび空文字から変換されたNULL）を0に置き換える。
+    # 【修正点】カラムのデータ型に応じてSQLを動的に生成する
 
-    sql = <<~SQL
-      SUM(
-        COALESCE(CAST(NULLIF(dashine, '') AS NUMERIC), 0) *
-        COALESCE(CAST(NULLIF(lastamount, '') AS NUMERIC), 0)
-      )
-    SQL
+    # リレーションからモデルクラス（例: ProsperPost）を取得
+    return 0 unless posts_relation.respond_to?(:model)
+    model = posts_relation.model
 
+    # カラム名に応じて適切なSQLスニペットを生成する内部関数
+    generate_sql_for = ->(column_name) {
+      # ActiveRecordが認識しているカラムのデータ型を取得
+      column_type = model.columns_hash[column_name]&.type
+      # 数値型かどうかを判定
+      is_numeric = [:integer, :float, :decimal, :numeric].include?(column_type)
+
+      if is_numeric
+        # すでに数値型の場合: NULLを0に置き換えるだけ (COALESCE)
+        "COALESCE(#{column_name}, 0)"
+      else
+        # 文字列型の場合: 空文字をNULLにし(NULLIF)、数値(NUMERIC)に変換(CAST)してから0に置き換える
+        # COALESCEの型不一致を防ぐため、リテラルは 0.0 を使用します。
+        "COALESCE(CAST(NULLIF(#{column_name}, '') AS NUMERIC), 0.0)"
+      end
+    }
+
+    # 単価と数量のSQLスニペットを生成
+    dashine_sql = generate_sql_for.call('dashine')
+    lastamount_sql = generate_sql_for.call('lastamount')
+
+    # 最終的な計算式を組み合わせる
+    # SUM((単価のSQL) * (数量のSQL))
+    sql = "SUM((#{dashine_sql}) * (#{lastamount_sql}))"
+
+    # SQLを実行し、結果を整数で返す (.to_i)
     # Arel.sql() を使用して、安全に生のSQLスニペットをクエリに組み込みます。
-    # 結果を整数にして返します (.to_i)
     posts_relation.sum(Arel.sql(sql)).to_i
   end
 
   # 請求書のサマリーを計算する
+  # (calculate_invoice_summary メソッドは変更ありません)
   def calculate_invoice_summary(past, pastallnyukin, pastallsousai, ageuri, minus, comp)
     # 1. 前回繰越残高の計算 (売上 - 入金 - 相殺)
 
@@ -41,7 +60,7 @@ module PostsHelper
     current_offsets_total = calculate_total_amount(minus).abs
 
     # 4. 消費税計算
-    # ProsperCorporation モデルの tax カラムも文字列型の可能性があるため、.to_f で安全に変換する。
+    # ProsperCorporation モデルの tax カラムも考慮し、.to_f で安全に変換する。
     # 税率が未設定の場合はデフォルト10%とする。
     tax_rate_percent = comp.try(:tax).to_f > 0 ? comp.tax.to_f : 10.0
     tax_rate = tax_rate_percent / 100.0
