@@ -27,3 +27,4 @@ production:
   prosper_external:
     <<: *default
     url: <%= ENV["PROSPER_DB_URL"] %>
+    sslmode: require
