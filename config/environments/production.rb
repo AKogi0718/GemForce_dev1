@@ -41,7 +41,7 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Use Solid Cache (connects to `cache` database)
-  # config.cache_store = :solid_cache_store
+  #  config.cache_store = :solid_cache_store
   config.cache_store = :memory_store
 
   # Use Solid Queue (connects to `queue` database)
