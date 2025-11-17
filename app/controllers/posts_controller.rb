@@ -17,7 +17,7 @@ class PostsController < ApplicationController
     @month = params[:month]
 
     # 外部DB（prosper）からのデータ取得
-    @posts = ProsperPost.where("EXTRACT(YEAR FROM date) = ? AND EXTRACT(MONTH FROM date) = ?", @year, @month)
+    @posts = ProsperPost.where("EXTRACT(YEAR FROM lastdate) = ? AND EXTRACT(MONTH FROM lastdate) = ?", @year, @month)
     @comp = ProsperCorporation.all
     @urikake1 = ProsperUrikake.where(process: 1)
     @urikake2 = ProsperUrikake.where(process: 2)
