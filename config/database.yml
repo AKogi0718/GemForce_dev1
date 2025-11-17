@@ -25,3 +25,7 @@ production:
     <<: *default
     url: <%= ENV["PROSPER_DB_URL"] %>
     sslmode: require
+
+  cache:
+    <<: *default
+    url: <%= ENV.fetch("CACHE_DATABASE_URL", ENV["DATABASE_URL"]) %>
