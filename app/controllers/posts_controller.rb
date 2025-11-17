@@ -14,13 +14,27 @@ class PostsController < ApplicationController
   end
   def theaccounting
     @year = params[:year]
-    @month = params[:month]
+    @month = params[:month].to_s.rjust(2, '0')
+
+    # 対象月と、既存システムの「2021-05-01」からの期間情報を算出
+    begin
+      target_month_start = Date.new(@year.to_i, @month.to_i, 1)
+    rescue ArgumentError
+      flash[:alert] = "年月の指定が不正です。"
+      redirect_to action: :monthselect
+      return
+    end
+
+    @search_date = target_month_start
+    @search_date2 = target_month_start.prev_month
+    @lastdate = @search_date2.end_of_month
+    @first = Date.new(2021, 5, 1)
 
     # 外部DB（prosper）からのデータ取得
-    @posts = ProsperPost.where("EXTRACT(YEAR FROM lastdate) = ? AND EXTRACT(MONTH FROM lastdate) = ?", @year, @month)
+    @posts = ProsperPost.where("EXTRACT(YEAR FROM lastdate) = ? AND EXTRACT(MONTH FROM lastdate) = ?", @year.to_i, @month.to_i)
     @comp = ProsperCorporation.all
-    @urikake1 = ProsperUrikake.where(process: 1)
-    @urikake2 = ProsperUrikake.where(process: 2)
+    @urikake1 = ProsperUrikake.where(date: @first...@search_date)
+    @urikake2 = ProsperUrikake.where(date: @search_date.beginning_of_month..@search_date.end_of_month)
     @pastprice = ProsperPost.where(process: 3)
     @nowprice = ProsperPost.where(process: 4)
     @pastallnyukin = ProsperPost.where(process: 5)
