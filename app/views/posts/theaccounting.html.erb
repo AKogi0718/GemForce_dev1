@@ -393,7 +393,7 @@
 
         <% end %>
 
-        <% @unpaid = Corporation.find_by(client: ap.client) %>
+        <% @unpaid = ProsperCorporation.find_by(client: ap.client) %>
 
         <% if @unpaid.unpaid == nil %>
 
