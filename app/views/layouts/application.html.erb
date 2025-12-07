@@ -136,6 +136,29 @@
         color: rgba(255, 255, 255, 0.6);
         text-align: center;
       }
+      /* 印刷時はページ全体のヘッダー/フッターを非表示にし、余白を最小化 */
+      @media print {
+        header,
+        .navbar,
+        .footer {
+          display: none !important;
+          visibility: hidden;
+          height: 0;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+        }
+
+        body {
+          margin: 0;
+        }
+
+        main.content .container {
+          max-width: none;
+          width: 100%;
+          padding: 0 5mm;
+        }
+      }
     </style>
   </head>
   <body>
