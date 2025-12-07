@@ -119,7 +119,7 @@
     <% @comp.each do |ap|  %>
 
 
-            <% @cop = @pastprice.where(client: ap.client) %>
+            <% @cop = @pastprice_by_client[ap.client] || [] %>
             <% @cops = [0] %>
             <% @costs = [0] %>
 
@@ -163,11 +163,11 @@
 
             <% else %>
 
-            <% @product = Good.find_by(client_modelnumber: copss.modelnumber) %>
+            <% @product = @goods_by_modelnumber[copss.modelnumber] %>
 
                 <% if @product&.bullion != nil  %>
 
-                <% @bb = Bullion.find_by(bullion: @product&.bullion) %>
+                <% @bb = @bullions_by_name[@product&.bullion] %>
                   <% if copss.bweight1 != nil && @bb&.market_price != nil %>
 
                   <% @castcost1 = @bb&.market_price * copss.bweight1 %>
@@ -182,7 +182,7 @@
 
                 <% if @product&.bullion2 != nil %>
 
-                <% @bb2 = Bullion.find_by(bullion: @product&.bullion2) %>
+                <% @bb2 = @bullions_by_name[@product&.bullion2] %>
                   <% if copss&.bweight2 != nil && @bb2&.market_price != nil %>
 
                   <% @castcost2 = @bb2&.market_price * copss&.bweight2 %>
@@ -198,7 +198,7 @@
 
                 <% if @product&.bullion3 != nil  %>
 
-                <% @bb3 = Bullion.find_by(bullion: @product&.bullion3) %>
+                <% @bb3 = @bullions_by_name[@product&.bullion3] %>
                   <% if copss.bweight3 != nil && @bb3&.market_price != nil %>
 
                   <% @castcost3 = @bb3&.market_price * copss.bweight3 %>
@@ -214,7 +214,7 @@
 
                 <% if @product&.bullion4 != nil %>
 
-                <% @bb4 = Bullion.find_by(bullion: @product&.bullion4) %>
+                <% @bb4 = @bullions_by_name[@product&.bullion4] %>
                   <% if copss.bweight4 != nil && @bb4&.market_price != nil %>
 
                   <% @castcost4 = @bb4&.market_price * copss.bweight4 %>
@@ -240,7 +240,7 @@
             <%# ============= %>
 
 
-            <% @nowpp = @nowprice.where(client: ap.client) %>
+            <% @nowpp = @nowprice_by_client[ap.client] || [] %>
             <% @nownumbers = [] %>
             <% @sales_amounts = [0] %>
             <% @return_amounts = [0] %>
@@ -303,11 +303,11 @@
 
             <% else %>
 
-            <% @nowproduct = Good.find_by(client_modelnumber: nowss.modelnumber) %>
+            <% @nowproduct = @goods_by_modelnumber[nowss.modelnumber] %>
 
                 <% if @nowproduct&.bullion != nil  %>
 
-                <% @nowbb = Bullion.find_by(bullion: @nowproduct&.bullion) %>
+                <% @nowbb = @bullions_by_name[@nowproduct&.bullion] %>
                   <% if nowss.bweight1 != nil && @nowbb&.market_price != nil %>
 
                   <% @nowcastcost1 = @nowbb&.market_price * nowss.bweight1 %>
@@ -322,7 +322,7 @@
 
                 <% if @nowproduct&.bullion2 != nil %>
 
-                <% @nowbb2 = Bullion.find_by(bullion: @nowproduct&.bullion2) %>
+                <% @nowbb2 = @bullions_by_name[@nowproduct&.bullion2] %>
                   <% if nowss&.bweight2 != nil && @nowbb2&.market_price != nil %>
 
                   <% @nowcastcost2 = @nowbb2&.market_price * nowss&.bweight2 %>
@@ -338,7 +338,7 @@
 
                 <% if @nowproduct&.bullion3 != nil  %>
 
-                <% @nowbb3 = Bullion.find_by(bullion: @nowproduct&.bullion3) %>
+                <% @nowbb3 = @bullions_by_name[@nowproduct&.bullion3] %>
                   <% if nowss.bweight3 != nil && @nowbb3&.market_price != nil %>
 
                   <% @nowcastcost3 = @nowbb3&.market_price * nowss.bweight3 %>
@@ -354,7 +354,7 @@
 
                 <% if @nowproduct&.bullion4 != nil %>
 
-                <% @nowbb4 = Bullion.find_by(bullion: @nowproduct&.bullion4) %>
+                <% @nowbb4 = @bullions_by_name[@nowproduct&.bullion4] %>
                   <% if nowss.bweight4 != nil && @nowbb4&.market_price != nil %>
 
                   <% @nowcastcost4 = @nowbb4&.market_price * nowss.bweight4 %>
@@ -388,7 +388,7 @@
             <% end %>
 
 
-        <% @allpastallnyukin = @pastallnyukin.where(client: ap.client) %>
+        <% @allpastallnyukin = @pastallnyukin_by_client[ap.client] || [] %>
         <% @pastnyukinsums = [0] %>
 
         <% @allpastallnyukin.each do |apam| %>
@@ -396,7 +396,7 @@
         <% end %>
 
 
-        <% @allnowallnyukin = @nowallnyukin.where(client: ap.client) %>
+        <% @allnowallnyukin = @nowallnyukin_by_client[ap.client] || [] %>
         <% @cash_payments = [0] %>
         <% @transfer_payments = [0] %>
         <% @check_payments = [0] %>
@@ -418,7 +418,7 @@
 
         <% end %>
 
-        <% @allpastallsousai = @pastallsousai.where(client: ap.client) %>
+        <% @allpastallsousai = @pastallsousai_by_client[ap.client] || [] %>
         <% @pastsousaisums = [0] %>
 
         <% @allpastallsousai.each do |apas| %>
@@ -426,7 +426,7 @@
 
         <% end %>
 
-        <% @allnowallsousai = @nowsousai.where(client: ap.client) %>
+        <% @allnowallsousai = @nowsousai_by_client[ap.client] || [] %>
         <% @nowallsousaisums = [0] %>
 
         <% @allnowallsousai.each do |anas| %>
@@ -434,17 +434,15 @@
 
         <% end %>
 
-        <% @unpaid = ProsperCorporation.find_by(client: ap.client) %>
+        <% @unpaid = @corporation_by_client[ap.client] %>
 
-        <% if @unpaid.unpaid == nil %>
-
-        <% @upp = 0 %>
+        <% if @unpaid&.unpaid.nil? %>
+                  <% @upp = 0 %>
         <% else %>
-
-        <% @upp = @unpaid.unpaid %>
+                  <% @upp = @unpaid.unpaid %>
         <% end %>
 
-        <% @fees = @urikake1.where(client: ap.client) %>
+        <% @fees = @urikake1_by_client[ap.client] || [] %>
         <% @allfee = [0] %>
         <% @fees.each do |fee1| %>
 
@@ -456,7 +454,7 @@
 
         <% end %>
 
-        <% @feess = @urikake2.where(client: ap.client) %>
+        <% @feess = @urikake2_by_client[ap.client] || [] %>
           <% @allfeess = [0] %>
           <% @feess.each do |fee2| %>
             <% if fee2.nil? %>

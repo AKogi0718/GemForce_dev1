@@ -35,31 +35,50 @@ class PostsController < ApplicationController
     # 外部DB（prosper）からのデータ取得
     # 外部DB（prosper）からのデータ取得（現行システムの条件を踏襲）
     @comp = ProsperCorporation.where.not(client: ["×", nil, "client", "マクドナルド"])
-                               .order(gana: :asc)
+                               .order(gana: :asc).to_a
 
     @posts = ProsperPost.where.not(nouhinnum: nil)
-                        .where(lastdate: current_month_range)
+                        .where(lastdate: current_month_range).to_a
 
     # 先月末までの全受注（入金・相殺を除外）
-    @pastprice = ProsperPost.where.not(nouhinnum: nil).where.not(modelnumber: "入金").where.not("modelnumber LIKE ?", "%相殺%").where(lastdate: past_range)
+    @pastprice = ProsperPost.where.not(nouhinnum: nil).where.not(modelnumber: "入金").where.not("modelnumber LIKE ?", "%相殺%").where(lastdate: past_range).to_a
 
     # 今月の売上（入金・相殺を除外、特定担当者を除外）
-    @nowprice = ProsperPost.where.not(nouhinnum: nil).where(lastdate: current_month_range).where.not(modelnumber: "入金").where.not("modelnumber LIKE ?", "%相殺%").where.not(person: "荻原誠二")
+    @nowprice = ProsperPost.where.not(nouhinnum: nil).where(lastdate: current_month_range).where.not(modelnumber: "入金").where.not("modelnumber LIKE ?", "%相殺%").where.not(person: "荻原誠二").to_a
 
     # 先月末までの全入金
-    @pastallnyukin = ProsperPost.where.not(nouhinnum: nil).where(modelnumber: "入金").where(lastdate: past_range)
+    @pastallnyukin = ProsperPost.where.not(nouhinnum: nil).where(modelnumber: "入金").where(lastdate: past_range).to_a
 
     # 今月の入金
-    @nowallnyukin = ProsperPost.where.not(nouhinnum: nil).where(modelnumber: "入金").where(lastdate: current_month_range)
+    @nowallnyukin = ProsperPost.where.not(nouhinnum: nil).where(modelnumber: "入金").where(lastdate: current_month_range).to_a
 
     # 先月末までの全相殺
-    @pastallsousai = ProsperPost.where.not(nouhinnum: nil).where("modelnumber LIKE ?", "%相殺%").where(lastdate: past_range)
+    @pastallsousai = ProsperPost.where.not(nouhinnum: nil).where("modelnumber LIKE ?", "%相殺%").where(lastdate: past_range).to_a
 
     # 今月の相殺
-    @nowsousai = ProsperPost.where.not(nouhinnum: nil).where("modelnumber LIKE ?", "%相殺%").where(lastdate: current_month_range)
+    @nowsousai = ProsperPost.where.not(nouhinnum: nil).where("modelnumber LIKE ?", "%相殺%").where(lastdate: current_month_range).to_a
 
-    @urikake1 = ProsperUrikake.where(date: @first...@search_date)
-    @urikake2 = ProsperUrikake.where(date: @search_date.beginning_of_month..@search_date.end_of_month)
+    @urikake1 = ProsperUrikake.where(date: @first...@search_date).to_a
+    @urikake2 = ProsperUrikake.where(date: @search_date.beginning_of_month..@search_date.end_of_month).to_a
+
+    # 取引先別にまとめておき、ビューでのクエリ爆発を防ぐ
+    @corporation_by_client = @comp.index_by(&:client)
+    @pastprice_by_client = @pastprice.group_by(&:client)
+    @nowprice_by_client = @nowprice.group_by(&:client)
+    @pastallnyukin_by_client = @pastallnyukin.group_by(&:client)
+    @nowallnyukin_by_client = @nowallnyukin.group_by(&:client)
+    @pastallsousai_by_client = @pastallsousai.group_by(&:client)
+    @nowsousai_by_client = @nowsousai.group_by(&:client)
+    @urikake1_by_client = @urikake1.group_by(&:client)
+    @urikake2_by_client = @urikake2.group_by(&:client)
+
+    # 商品/素材マスタを一括でプリロード
+    modelnumbers = (@pastprice + @nowprice).map(&:modelnumber).compact.uniq
+    @goods_by_modelnumber = Good.where(client_modelnumber: modelnumbers).index_by(&:client_modelnumber)
+    bullion_names = @goods_by_modelnumber.values.flat_map do |good|
+      [good.bullion, good.bullion2, good.bullion3, good.bullion4]
+    end.compact.uniq
+    @bullions_by_name = Bullion.where(bullion: bullion_names).index_by(&:bullion)
 
 
     render 'theaccounting'
