@@ -29,18 +29,21 @@ class PostsController < ApplicationController
     @search_date2 = target_month_start.prev_month
     @lastdate = @search_date2.end_of_month
     @first = Date.new(2021, 5, 1)
+    past_range = @first...@search_date
+    current_month_range = @search_date.beginning_of_month..@search_date.end_of_month
 
     # 外部DB（prosper）からのデータ取得
-    @posts = ProsperPost.where("EXTRACT(YEAR FROM lastdate) = ? AND EXTRACT(MONTH FROM lastdate) = ?", @year.to_i, @month.to_i)
+    @posts = ProsperPost.where(lastdate: current_month_range)
+    # @posts = ProsperPost.where("EXTRACT(YEAR FROM lastdate) = ? AND EXTRACT(MONTH FROM lastdate) = ?", @year.to_i, @month.to_i)
     @comp = ProsperCorporation.all
     @urikake1 = ProsperUrikake.where(date: @first...@search_date)
     @urikake2 = ProsperUrikake.where(date: @search_date.beginning_of_month..@search_date.end_of_month)
-    @pastprice = ProsperPost.where(process: 3)
-    @nowprice = ProsperPost.where(process: 4)
-    @pastallnyukin = ProsperPost.where(process: 5)
-    @nowallnyukin = ProsperPost.where(process: 6)
-    @pastallsousai = ProsperPost.where(process: 7)
-    @nowsousai = ProsperPost.where(process: 8)
+    @pastprice = ProsperPost.where(process: 3, lastdate: past_range)
+        @nowprice = ProsperPost.where(process: 4, lastdate: current_month_range)
+        @pastallnyukin = ProsperPost.where(process: 5, lastdate: past_range)
+        @nowallnyukin = ProsperPost.where(process: 6, lastdate: current_month_range)
+        @pastallsousai = ProsperPost.where(process: 7, lastdate: past_range)
+        @nowsousai = ProsperPost.where(process: 8, lastdate: current_month_range)
 
     render 'theaccounting'
   end
