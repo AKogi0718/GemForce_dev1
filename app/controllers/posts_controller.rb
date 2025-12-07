@@ -33,17 +33,41 @@ class PostsController < ApplicationController
     current_month_range = @search_date.beginning_of_month..@search_date.end_of_month
 
     # 外部DB（prosper）からのデータ取得
-    @posts = ProsperPost.where(lastdate: current_month_range)
-    # @posts = ProsperPost.where("EXTRACT(YEAR FROM lastdate) = ? AND EXTRACT(MONTH FROM lastdate) = ?", @year.to_i, @month.to_i)
-    @comp = ProsperCorporation.all
+    # 外部DB（prosper）からのデータ取得（現行システムの条件を踏襲）
+    @comp = ProsperCorporation.where.not(client: ["×", nil, "client", "マクドナルド"])
+                               .order(gana: :asc)
+
+    @posts = ProsperPost.where.not(nouhinnum: nil)
+                        .where(lastdate: current_month_range)
+
+    # 先月末までの全受注（入金・相殺を除外）
+    @pastprice = ProsperPost.where.not(nouhinnum: nil)
+                            .where(process: 3, lastdate: past_range)
+
+    # 今月の売上（特定担当者を除外）
+    @nowprice = ProsperPost.where.not(nouhinnum: nil)
+                           .where(process: 4, lastdate: current_month_range)
+                           .where.not(person: "荻原誠二")
+
+    # 先月末までの全入金
+    @pastallnyukin = ProsperPost.where.not(nouhinnum: nil)
+                                .where(process: 5, lastdate: past_range)
+
+    # 今月の入金
+    @nowallnyukin = ProsperPost.where.not(nouhinnum: nil)
+                               .where(process: 6, lastdate: current_month_range)
+
+    # 先月末までの全相殺
+    @pastallsousai = ProsperPost.where.not(nouhinnum: nil)
+                                .where(process: 7, lastdate: past_range)
+
+    # 今月の相殺
+    @nowsousai = ProsperPost.where.not(nouhinnum: nil)
+                             .where(process: 8, lastdate: current_month_range)
+
     @urikake1 = ProsperUrikake.where(date: @first...@search_date)
     @urikake2 = ProsperUrikake.where(date: @search_date.beginning_of_month..@search_date.end_of_month)
-    @pastprice = ProsperPost.where(process: 3, lastdate: past_range)
-        @nowprice = ProsperPost.where(process: 4, lastdate: current_month_range)
-        @pastallnyukin = ProsperPost.where(process: 5, lastdate: past_range)
-        @nowallnyukin = ProsperPost.where(process: 6, lastdate: current_month_range)
-        @pastallsousai = ProsperPost.where(process: 7, lastdate: past_range)
-        @nowsousai = ProsperPost.where(process: 8, lastdate: current_month_range)
+    
 
     render 'theaccounting'
   end
