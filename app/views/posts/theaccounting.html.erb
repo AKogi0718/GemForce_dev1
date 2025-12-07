@@ -478,7 +478,12 @@
       <% sales_total = @sales_amounts.sum + @return_amounts.sum + @discount_amounts.sum + @nowtax.sum %>
       <% payment_total = @cash_payments.sum + @transfer_payments.sum + @check_payments.sum + @bill_payments.sum + @nowallsousaisums.sum %>
       <td ><%= number_to_currency(@upp + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum - @allfee.sum , unit: "¥", precision: 0) %><br><%= number_to_currency(@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + sales_total - payment_total, unit: "¥", precision: 0) %></td>
+      <td ><%= number_to_currency(sales_total, unit: "¥", precision: 0) %><br><%= number_to_currency(payment_total, unit: "¥", precision: 0) %></td>
       <% rescue => e %>
+        <td style="background-color:pink;">
+          エラー発生: <%= ap.client %><br>
+          <%= e.message %>
+        </td>
         <td style="background-color:pink;">
           エラー発生: <%= ap.client %><br>
           <%= e.message %>
@@ -515,30 +520,6 @@
   </div>
   <!-- エラーを回避してデフォルト値を追加 -->
   <% @ar6 << 0 %>
-<% end %>
-
-
-<% begin %>
-<td ><%= number_to_currency(@upp + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum - @allfee.sum , unit: "¥", precision: 0) %><br><%= number_to_currency(@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + sales_total - payment_total, unit: "¥", precision: 0) %></td>
-<% rescue => e %>
-<td style="background-color:pink;">
-エラー発生: <%= ap.client %><br>
-<%= e.message %><br>
-@upp: <%= @upp.inspect %><br>
-@allfee.sum: <%= @allfee.sum rescue 'ERROR' %><br>
-@allfeess.sum: <%= @allfeess.sum rescue 'ERROR' %><br>
-@cops.sum: <%= @cops.sum rescue 'ERROR' %><br>
-@pastnyukinsums.sum: <%= @pastnyukinsums.sum rescue 'ERROR' %><br>
-@pastsousaisums.sum: <%= @pastsousaisums.sum rescue 'ERROR' %><br>
-@sales_amounts.sum: <%= @sales_amounts.sum rescue 'ERROR' %><br>
-@return_amounts.sum: <%= @return_amounts.sum rescue 'ERROR' %><br>
-@discount_amounts.sum: <%= @discount_amounts.sum rescue 'ERROR' %><br>
-@nowtax.sum: <%= @nowtax.sum rescue 'ERROR' %><br>
-@cash_payments.sum: <%= @cash_payments.sum rescue 'ERROR' %><br>
-@transfer_payments.sum: <%= @transfer_payments.sum rescue 'ERROR' %><br>
-@check_payments.sum: <%= @check_payments.sum rescue 'ERROR' %><br>
-@bill_payments.sum: <%= @bill_payments.sum rescue 'ERROR' %><br>@nowallsousaisums.sum: <%= @nowallsousaisums.sum rescue 'ERROR' %><br>
-</td>
 <% end %>
 
 <td ><%= number_to_currency(@sales_amounts.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@cash_payments.sum, unit: "¥", precision: 0) %></td>

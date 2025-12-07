@@ -29,8 +29,8 @@ class PostsController < ApplicationController
     @search_date2 = target_month_start.prev_month
     @lastdate = @search_date2.end_of_month
     @first = Date.new(2021, 5, 1)
-    past_range = @first...@search_date
-    current_month_range = @search_date.beginning_of_month..@search_date.end_of_month
+    past_range = @first.beginning_of_day...@search_date.beginning_of_day
+    current_month_range = @search_date.in_time_zone.all_month
 
     # 外部DB（prosper）からのデータ取得
     # 外部DB（prosper）からのデータ取得（現行システムの条件を踏襲）
