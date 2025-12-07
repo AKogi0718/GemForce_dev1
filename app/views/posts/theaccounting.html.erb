@@ -67,10 +67,20 @@
       <% @ar8 =[0] %>
       <%# 売上 %>
       <% @ar9 =[0] %>
-      <%# 入金 %>
-      <% @ar10 =[0] %>
+      <%# 返品 %>
+      <% @return_totals = [0] %>
+      <%# 値引 %>
+      <% @discount_totals = [0] %>
       <%# 消費税 %>
       <% @ar11 =[0] %>
+      <%# 現金 %>
+      <% @cash_totals = [0] %>
+      <%# 振込 %>
+      <% @transfer_totals = [0] %>
+      <%# 小切手 %>
+      <% @check_totals = [0] %>
+      <%# 手形 %>
+      <% @bill_totals = [0] %>
       <%# 相殺 %>
       <% @ar12 =[0] %>
     <!-- </tbody>
@@ -231,8 +241,9 @@
 
 
             <% @nowpp = @nowprice.where(client: ap.client) %>
-            <% @nows = [0] %>
-            <% @nownumbers = [0] %>
+            <% @sales_amounts = [0] %>
+            <% @return_amounts = [0] %>
+            <% @discount_amounts = [0] %>
             <% @nowtax = [0] %>
             <% @nowcosts = [0] %>
 
@@ -276,7 +287,15 @@
 
 
             <% @nowmilkprice = nowss&.lastamount.to_i * nowss&.dashine.to_i + @nowthe1 + @nowthe2 + @nowthe3 + @nowthe4 %>
-            <% @nows << nowss&.lastamount.to_i * nowss&.dashine.to_i + @nowthe1 + @nowthe2 + @nowthe3 + @nowthe4 %>
+
+            <% @computed_amount = nowss&.lastamount.to_i * nowss&.dashine.to_i + @nowthe1 + @nowthe2 + @nowthe3 + @nowthe4 %>
+            <% if nowss.modelnumber&.include?("返品") %>
+              <% @return_amounts << @computed_amount %>
+            <% elsif nowss.modelnumber&.include?("値引") %>
+              <% @discount_amounts << @computed_amount %>
+            <% else %>
+              <% @sales_amounts << @computed_amount %>
+            <% end %>
             <% @nowtax << @nowmilkprice / 10 %>
             <% @nowcosts << nowss&.lastamount.to_i * nowss&.allwage.to_i + @nowthe1 + @nowthe2 + @nowthe3 + @nowthe4 %>
 
@@ -349,7 +368,14 @@
 
 
             <% @nownumbers << nowss.id %>
-            <% @nows << nowss.lastamount.to_i * nowss.dashine.to_i %>
+            <% @computed_amount = nowss.lastamount.to_i * nowss.dashine.to_i %>
+            <% if nowss.modelnumber&.include?("返品") %>
+              <% @return_amounts << @computed_amount %>
+            <% elsif nowss.modelnumber&.include?("値引") %>
+              <% @discount_amounts << @computed_amount %>
+            <% else %>
+              <% @sales_amounts << @computed_amount %>
+            <% end %>
             <% @nowtax << nowss.lastamount.to_i * nowss.dashine.to_i * 0.1 %>
             <% @nowcosts << nowss.lastamount.to_i * nowss.allwage.to_i + @nowcastcost1 + @nowcastcost2 + @nowcastcost3 + @nowcastcost4 %>
 
@@ -370,10 +396,24 @@
 
 
         <% @allnowallnyukin = @nowallnyukin.where(client: ap.client) %>
-        <% @nowallnyukinsums = [0] %>
+        <% @cash_payments = [0] %>
+        <% @transfer_payments = [0] %>
+        <% @check_payments = [0] %>
+        <% @bill_payments = [0] %>
 
         <% @allnowallnyukin.each do |anan| %>
-        <% @nowallnyukinsums << anan&.dashine.to_i %>
+        <% amount = anan&.dashine.to_i %>
+          <% if anan.modelnumber&.include?("現金") %>
+            <% @cash_payments << amount %>
+          <% elsif anan.modelnumber&.include?("振込") %>
+            <% @transfer_payments << amount %>
+          <% elsif anan.modelnumber&.include?("小切手") %>
+            <% @check_payments << amount %>
+          <% elsif anan.modelnumber&.include?("手形") %>
+            <% @bill_payments << amount %>
+          <% else %>
+            <% @cash_payments << amount %>
+          <% end %>
 
         <% end %>
 
@@ -434,8 +474,9 @@
       <td ><br><%= ap.client %></td>
 
       <% begin %>
-        <!-- 問題の行 -->
-        <td ><%= number_to_currency(@upp + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum - @allfee.sum , unit: "¥", precision: 0) %><br><%= number_to_currency(@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @nows.sum + @nowtax.sum - @nowallnyukinsums.sum - @nowallsousaisums.sum, unit: "¥", precision: 0) %></td>
+      <% sales_total = @sales_amounts.sum + @return_amounts.sum + @discount_amounts.sum + @nowtax.sum %>
+      <% payment_total = @cash_payments.sum + @transfer_payments.sum + @check_payments.sum + @bill_payments.sum + @nowallsousaisums.sum %>
+      <td ><%= number_to_currency(@upp + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum - @allfee.sum , unit: "¥", precision: 0) %><br><%= number_to_currency(@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + sales_total - payment_total, unit: "¥", precision: 0) %></td>
       <% rescue => e %>
         <td style="background-color:pink;">
           エラー発生: <%= ap.client %><br>
@@ -447,7 +488,7 @@
 <% @ar5 << @upp - @allfee.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum %>
 
 <% begin %>
-  <% @ar6 << @upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @nows.sum + @nowtax.sum - @nowallnyukinsums.sum - @nowallsousaisums.sum %>
+<% @ar6 << @upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + sales_total - payment_total %>
 <% rescue => e %>
   <!-- エラーをログに出力 -->
   <% Rails.logger.error("計算エラー for client: #{ap.client}, message: #{e.message}") %>
@@ -461,9 +502,14 @@
     @cops.sum: <%= @cops.sum rescue 'ERROR' %><br>
     @pastnyukinsums.sum: <%= @pastnyukinsums.sum rescue 'ERROR' %><br>
     @pastsousaisums.sum: <%= @pastsousaisums.sum rescue 'ERROR' %><br>
-    @nows.sum: <%= @nows.sum rescue 'ERROR' %><br>
+    @sales_amounts.sum: <%= @sales_amounts.sum rescue 'ERROR' %><br>
+    @return_amounts.sum: <%= @return_amounts.sum rescue 'ERROR' %><br>
+    @discount_amounts.sum: <%= @discount_amounts.sum rescue 'ERROR' %><br>
     @nowtax.sum: <%= @nowtax.sum rescue 'ERROR' %><br>
-    @nowallnyukinsums.sum: <%= @nowallnyukinsums.sum rescue 'ERROR' %><br>
+    @cash_payments.sum: <%= @cash_payments.sum rescue 'ERROR' %><br>
+    @transfer_payments.sum: <%= @transfer_payments.sum rescue 'ERROR' %><br>
+    @check_payments.sum: <%= @check_payments.sum rescue 'ERROR' %><br>
+    @bill_payments.sum: <%= @bill_payments.sum rescue 'ERROR' %><br>
     @nowallsousaisums.sum: <%= @nowallsousaisums.sum rescue 'ERROR' %><br>
   </div>
   <!-- エラーを回避してデフォルト値を追加 -->
@@ -472,7 +518,7 @@
 
 
 <% begin %>
-<td ><%= number_to_currency(@upp + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum - @allfee.sum , unit: "¥", precision: 0) %><br><%= number_to_currency(@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @nows.sum + @nowtax.sum - @nowallnyukinsums.sum - @nowallsousaisums.sum, unit: "¥", precision: 0) %></td>
+<td ><%= number_to_currency(@upp + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum - @allfee.sum , unit: "¥", precision: 0) %><br><%= number_to_currency(@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + sales_total - payment_total, unit: "¥", precision: 0) %></td>
 <% rescue => e %>
 <td style="background-color:pink;">
 エラー発生: <%= ap.client %><br>
@@ -483,35 +529,35 @@
 @cops.sum: <%= @cops.sum rescue 'ERROR' %><br>
 @pastnyukinsums.sum: <%= @pastnyukinsums.sum rescue 'ERROR' %><br>
 @pastsousaisums.sum: <%= @pastsousaisums.sum rescue 'ERROR' %><br>
-@nows.sum: <%= @nows.sum rescue 'ERROR' %><br>
+@sales_amounts.sum: <%= @sales_amounts.sum rescue 'ERROR' %><br>
+@return_amounts.sum: <%= @return_amounts.sum rescue 'ERROR' %><br>
+@discount_amounts.sum: <%= @discount_amounts.sum rescue 'ERROR' %><br>
 @nowtax.sum: <%= @nowtax.sum rescue 'ERROR' %><br>
-@nowallnyukinsums.sum: <%= @nowallnyukinsums.sum rescue 'ERROR' %><br>
-@nowallsousaisums.sum: <%= @nowallsousaisums.sum rescue 'ERROR' %><br>
+@cash_payments.sum: <%= @cash_payments.sum rescue 'ERROR' %><br>
+@transfer_payments.sum: <%= @transfer_payments.sum rescue 'ERROR' %><br>
+@check_payments.sum: <%= @check_payments.sum rescue 'ERROR' %><br>
+@bill_payments.sum: <%= @bill_payments.sum rescue 'ERROR' %><br>@nowallsousaisums.sum: <%= @nowallsousaisums.sum rescue 'ERROR' %><br>
 </td>
 <% end %>
 
-      <td ><%= number_to_currency(@nows.sum, unit: "¥", precision: 0) %><br><p>-</p></td>
-      <td ><p>-</p><br><%= number_to_currency(@nowallnyukinsums&.sum, unit: "¥", precision: 0) %></td>
-      <td ><br></td>
-
-      <td ><%= number_to_currency(@nowtax.sum, unit: "¥", precision: 0) %><br><p>-</p></td>
-
+<td ><%= number_to_currency(@sales_amounts.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@cash_payments.sum, unit: "¥", precision: 0) %></td>
+<td ><%= number_to_currency(@return_amounts.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@transfer_payments.sum, unit: "¥", precision: 0) %></td>
+<td ><%= number_to_currency(@discount_amounts.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@check_payments.sum, unit: "¥", precision: 0) %></td>
+<td ><%= number_to_currency(@nowtax.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@bill_payments.sum, unit: "¥", precision: 0) %></td>
 
 
-      <td ><br><%= number_to_currency(@nowallsousaisums&.sum, unit: "¥", precision: 0) %></td>
-      <% if @cops.sum == 0 %>
-      <% @ar7 << @nows.sum %>
-      <% @ar9 << @nows.sum %>
-      <% @ar11 << @nowtax.sum %>
-      <% else %>
-
-      <% @ar7 << @nows.sum %>
-      <% @ar8 << @nowallnyukinsums.sum %>
-      <% @ar9 << @nows.sum %>
+<td ><p>-</p><br><%= number_to_currency(@nowallsousaisums&.sum, unit: "¥", precision: 0) %></td>
+      <% @ar7 << sales_total %>
+      <% @ar8 << payment_total %>
+      <% @ar9 << @sales_amounts.sum %>
+      <% @return_totals << @return_amounts.sum %>
+      <% @discount_totals << @discount_amounts.sum %>
       <% @ar11 << @nowtax.sum %>
 
-      <% end %>
-      <% @ar10 << @nowallnyukinsums.sum %>
+      <% @cash_totals << @cash_payments.sum %>
+      <% @transfer_totals << @transfer_payments.sum %>
+      <% @check_totals << @check_payments.sum %>
+      <% @bill_totals << @bill_payments.sum %>
       <% @ar12 << @nowallsousaisums.sum %>
 
     </tr>
@@ -519,13 +565,13 @@
 
   <tr>
       <td><b>合計</b></td>
-      <td><%= number_to_currency(@ar5.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@ar5.sum + @ar7.sum + @ar11.sum - @ar12.sum - @ar8.sum, unit: "¥", precision: 0) %></td>
+      <td><%= number_to_currency(@ar5.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@ar6.sum, unit: "¥", precision: 0) %></td>
       <td><%= number_to_currency(@ar7&.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@ar8&.sum, unit: "¥", precision: 0) %></td>
-      <td><%= number_to_currency(@ar9&.sum, unit: "¥", precision: 0) %><br><p>-</p></td>
-      <td><p>-</p><br><%= number_to_currency(@ar10&.sum, unit: "¥", precision: 0) %></td>
-      <td></td>
-      <td><%= number_to_currency(@ar11&.sum, unit: "¥", precision: 0) %><br><p>-</p></td>
-      <td><br><%= number_to_currency(@ar12&.sum, unit: "¥", precision: 0) %></td>
+      <td><%= number_to_currency(@ar9&.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@cash_totals&.sum, unit: "¥", precision: 0) %></td>
+            <td><%= number_to_currency(@return_totals&.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@transfer_totals&.sum, unit: "¥", precision: 0) %></td>
+            <td><%= number_to_currency(@discount_totals&.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@check_totals&.sum, unit: "¥", precision: 0) %></td>
+            <td><%= number_to_currency(@ar11&.sum, unit: "¥", precision: 0) %><br><%= number_to_currency(@bill_totals&.sum, unit: "¥", precision: 0) %></td>
+            <td><p>-</p><br><%= number_to_currency(@ar12&.sum, unit: "¥", precision: 0) %></td>
     </tr>
 
     </tbody>
