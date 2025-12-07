@@ -1,9 +1,12 @@
 <!-- 受注一覧index -->
 <style type="text/css" media="print">
 
-  @page { size: A4 landscape} /* A4横 */
-  div.print{
-        visibility: hidden;
+  @page {
+    size: A4 landscape; /* A4横 */
+    margin: 5mm;
+  }
+  div.print {
+    visibility: hidden;
   }
   div.divFooter {
     width: 100%;
@@ -11,50 +14,34 @@
     position: absolute;
     bottom: 0;
     visibility: visible;
+  }
+    @media print {
+      #menu,
+      h2 {
+        display: none;
+      }
+
+      div.divFooter {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  visibility: visible;
+}
+div.print {
+      visibility: visible;
     }
-  @media print {
-  #menu {
-    display: none;
-  }
-  div.divFooter {
-    width: 100%;
-    /* position: fixed; */
-    position: absolute;
-    bottom: 0;
-    visibility: visible;
+    .accounting-table {
+      font-size: 8px;
+      border-collapse: collapse;
+    }
 
-
-
-}
-  div.print{
-
-    visibility: visible;
-
-  }
-  h2 {
-  margin: 0 0 4px;
-  font-size: 14px;
-}
-
-.accounting-table {
-  font-size: 9px;
-  border-collapse: collapse;
-}
-
-.accounting-table td {
-  padding: 2px 4px;
-  line-height: 1.2;
-}
-
-body {
-  margin: 8mm;
-}
+    .accounting-table td {
+      padding: 1px 3px;
+      line-height: 1.1;
+    }
 
 
 }
-
-
-
 </style>
 
 <div class="main posts-index">
@@ -64,7 +51,7 @@ body {
 
   </div>
   <h2 align="center">売掛残高一覧表(<%= @year %>/<%= @month %>)</h2>
-  <table class="accounting-table" width="95%" border="2" align="center" style="font-size:12px;">
+  <table class="accounting-table" width="95%" border="2" align="center">
     <tbody>
       <tr>
         <td width="25%" bgcolor="#fafad2" style="border: none;"><b>取引先名</b></td>
