@@ -413,7 +413,7 @@
           <% elsif anan.modelnumber&.include?("手形") %>
             <% @bill_payments << amount %>
           <% else %>
-            <% @cash_payments << amount %>
+            <% @transfer_payments << amount %>
           <% end %>
 
         <% end %>
