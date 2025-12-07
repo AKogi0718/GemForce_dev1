@@ -41,33 +41,26 @@ class PostsController < ApplicationController
                         .where(lastdate: current_month_range)
 
     # 先月末までの全受注（入金・相殺を除外）
-    @pastprice = ProsperPost.where.not(nouhinnum: nil)
-                            .where(process: 3, lastdate: past_range)
+    @pastprice = ProsperPost.where.not(nouhinnum: nil).where.not(modelnumber: "入金").where.not("modelnumber LIKE ?", "%相殺%").where(lastdate: past_range)
 
-    # 今月の売上（特定担当者を除外）
-    @nowprice = ProsperPost.where.not(nouhinnum: nil)
-                           .where(process: 4, lastdate: current_month_range)
-                           .where.not(person: "荻原誠二")
+    # 今月の売上（入金・相殺を除外、特定担当者を除外）
+    @nowprice = ProsperPost.where.not(nouhinnum: nil).where(lastdate: current_month_range).where.not(modelnumber: "入金").where.not("modelnumber LIKE ?", "%相殺%").where.not(person: "荻原誠二")
 
     # 先月末までの全入金
-    @pastallnyukin = ProsperPost.where.not(nouhinnum: nil)
-                                .where(process: 5, lastdate: past_range)
+    @pastallnyukin = ProsperPost.where.not(nouhinnum: nil).where(modelnumber: "入金").where(lastdate: past_range)
 
     # 今月の入金
-    @nowallnyukin = ProsperPost.where.not(nouhinnum: nil)
-                               .where(process: 6, lastdate: current_month_range)
+    @nowallnyukin = ProsperPost.where.not(nouhinnum: nil).where(modelnumber: "入金").where(lastdate: current_month_range)
 
     # 先月末までの全相殺
-    @pastallsousai = ProsperPost.where.not(nouhinnum: nil)
-                                .where(process: 7, lastdate: past_range)
+    @pastallsousai = ProsperPost.where.not(nouhinnum: nil).where("modelnumber LIKE ?", "%相殺%").where(lastdate: past_range)
 
     # 今月の相殺
-    @nowsousai = ProsperPost.where.not(nouhinnum: nil)
-                             .where(process: 8, lastdate: current_month_range)
+    @nowsousai = ProsperPost.where.not(nouhinnum: nil).where("modelnumber LIKE ?", "%相殺%").where(lastdate: current_month_range)
 
     @urikake1 = ProsperUrikake.where(date: @first...@search_date)
     @urikake2 = ProsperUrikake.where(date: @search_date.beginning_of_month..@search_date.end_of_month)
-    
+
 
     render 'theaccounting'
   end
