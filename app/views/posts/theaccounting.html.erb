@@ -235,7 +235,7 @@ div.print {
 
 
 
-            <% @cops << copss&.lastamount.to_i * copss&.dashine.to_i * 1.1 %>
+            <% @cops << (copss&.lastamount.to_i * copss&.dashine.to_i * 1.1).round %>
             <% @costs << copss&.lastamount.to_i * copss&.allwage.to_i + @castcost1 + @castcost2 + @castcost3 + @castcost4 %>
 
 
@@ -383,7 +383,7 @@ div.print {
             <% else %>
               <% @sales_amounts << @computed_amount %>
             <% end %>
-            <% @nowtax << nowss.lastamount.to_i * nowss.dashine.to_i * 0.1 %>
+            <% @nowtax << (nowss.lastamount.to_i * nowss.dashine.to_i * 0.1).round %>
             <% @nowcosts << nowss.lastamount.to_i * nowss.allwage.to_i + @nowcastcost1 + @nowcastcost2 + @nowcastcost3 + @nowcastcost4 %>
 
 
