@@ -460,6 +460,16 @@ div.print {
 
         <% end %>
 
+        <%# 先月末までの一括消費税調整額を計算 %>
+        <% @tax_adj_past = 0 %>
+        <% @fees.each do |u1| %>
+          <% if u1&.bunrui == "5-一括消費税(+)" %>
+            <% @tax_adj_past += u1.price.to_i.abs %>
+          <% elsif u1&.bunrui == "7-一括消費税(-)" %>
+            <% @tax_adj_past -= u1.price.to_i.abs %>
+          <% end %>
+        <% end %>
+
         <% @feess = @urikake2_by_client[ap.client] || [] %>
           <% @allfeess = [0] %>
           <% @feess.each do |fee2| %>
@@ -470,7 +480,15 @@ div.print {
             <% end %>
           <% end %>
 
-
+        <%# 当月の一括消費税調整額を計算 %>
+        <% @tax_adj_current = 0 %>
+        <% @feess.each do |u2| %>
+          <% if u2&.bunrui == "5-一括消費税(+)" %>
+            <% @tax_adj_current += u2.price.to_i.abs %>
+          <% elsif u2&.bunrui == "7-一括消費税(-)" %>
+            <% @tax_adj_current -= u2.price.to_i.abs %>
+          <% end %>
+        <% end %>
 
 
     <tr>
@@ -481,7 +499,7 @@ div.print {
       <% begin %>
       <% sales_total = @sales_amounts.sum + @return_amounts.sum + @discount_amounts.sum + @nowtax.sum %>
       <% payment_total = @cash_payments.sum + @transfer_payments.sum + @check_payments.sum + @bill_payments.sum + @nowallsousaisums.sum %>
-      <td ><%= number_to_currency(@upp + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum - @allfee.sum , unit: "¥", precision: 0) %><br><%= number_to_currency(@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + sales_total - payment_total, unit: "¥", precision: 0) %></td>
+      <td ><%= number_to_currency(@upp + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum - @allfee.sum + @tax_adj_past, unit: "¥", precision: 0) %><br><%= number_to_currency(@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @tax_adj_past + @tax_adj_current + sales_total - payment_total, unit: "¥", precision: 0) %></td>
       <td ><%= number_to_currency(sales_total, unit: "¥", precision: 0) %><br><%= number_to_currency(payment_total, unit: "¥", precision: 0) %></td>
       <% rescue => e %>
         <td style="background-color:pink;">
@@ -495,10 +513,10 @@ div.print {
       <% end %>
 
 
-<% @ar5 << @upp - @allfee.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum %>
+<% @ar5 << @upp - @allfee.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @tax_adj_past %>
 
 <% begin %>
-<% @ar6 << @upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + sales_total - payment_total %>
+<% @ar6 << @upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @tax_adj_past + @tax_adj_current + sales_total - payment_total %>
 <% rescue => e %>
   <!-- エラーをログに出力 -->
   <% Rails.logger.error("計算エラー for client: #{ap.client}, message: #{e.message}") %>
