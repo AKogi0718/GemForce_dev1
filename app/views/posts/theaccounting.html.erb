@@ -499,7 +499,7 @@ div.print {
       <% begin %>
       <% sales_total = @sales_amounts.sum + @return_amounts.sum + @discount_amounts.sum + @nowtax.sum %>
       <% payment_total = @cash_payments.sum + @transfer_payments.sum + @check_payments.sum + @bill_payments.sum + @nowallsousaisums.sum %>
-      <td ><%= number_to_currency((@upp + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum - @allfee.sum + @tax_adj_past).round, unit: "¥", precision: 0) %><br><%= number_to_currency((@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @tax_adj_past + @tax_adj_current + sales_total - payment_total).round, unit: "¥", precision: 0) %></td>
+      <td ><%= number_to_currency(@upp + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum - @allfee.sum + @tax_adj_past, unit: "¥", precision: 0) %><br><%= number_to_currency(@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @tax_adj_past + @tax_adj_current + sales_total - payment_total, unit: "¥", precision: 0) %></td>
       <td ><%= number_to_currency(sales_total, unit: "¥", precision: 0) %><br><%= number_to_currency(payment_total, unit: "¥", precision: 0) %></td>
       <% rescue => e %>
         <td style="background-color:pink;">
@@ -513,10 +513,10 @@ div.print {
       <% end %>
 
 
-<% @ar5 << (@upp - @allfee.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @tax_adj_past).round %>
+<% @ar5 << @upp - @allfee.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @tax_adj_past %>
 
 <% begin %>
-<% @ar6 << (@upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @tax_adj_past + @tax_adj_current + sales_total - payment_total).round %>
+<% @ar6 << @upp - @allfee.sum - @allfeess.sum + @cops.sum - @pastnyukinsums.sum - @pastsousaisums.sum + @tax_adj_past + @tax_adj_current + sales_total - payment_total %>
 <% rescue => e %>
   <!-- エラーをログに出力 -->
   <% Rails.logger.error("計算エラー for client: #{ap.client}, message: #{e.message}") %>
